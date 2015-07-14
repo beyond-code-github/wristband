@@ -11,4 +11,5 @@ class Ping(Resource):
 api.add_resource(Ping, '/ping/ping')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    app.run(debug=True, port=int(os.getenv("PORT", "5000")))
