@@ -35,6 +35,16 @@ class FlaskrTestCase(unittest.TestCase):
         rv = self.app.get('/api/config')
         self.assertEqual(expected_config, json.loads(rv.data))
 
+    def test_get_env_versions_bad_app_raises_404(self):
+        expected_config = {}
+        rv = self.app.get('/api/versions/QA/bad')
+        self.assertEqual(404, rv.status_code)
+
+    #def test_api_config_from_app_config(self):
+    #    expected_config = {}
+    #    rv = self.app.get('/api/versions/QA/captain')
+    #    self.assertEqual(expected_config, json.loads(rv.data))
+
 
 if __name__ == '__main__':
     unittest.main()
