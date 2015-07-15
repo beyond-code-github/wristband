@@ -42,7 +42,7 @@ class FlaskrTestCase(unittest.TestCase):
 
     #def test_api_config_from_app_config(self):
     #    expected_config = {}
-    #    rv = self.app.get('/api/versions/QA/captain')
+    #    rv = self.app.get('/api/versions/qa-left/captain')
     #    self.assertEqual(expected_config, json.loads(rv.data))
 
 

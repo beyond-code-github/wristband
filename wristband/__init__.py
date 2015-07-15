@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Resource, Api
 import types
 import json
+import requests
 
 app = Flask(__name__)
 api = Api(app)
@@ -31,14 +32,16 @@ class APIConfig(Resource):
         return envs
 
 
-@api.route('/api/versions/{deploy_env}/{app_name}')
+@api.route('/api/versions/<deploy_env>/<app_name>')
 class EnvVersions(Resource):
     def get(self, deploy_env, app_name):
-        #r = requests.get('{}/app/{}'.format(releases_endpoint, app_name))
-        #all_apps = requests.get('{}/app/{}'.format(releases_endpoint, app_name)).json()
-        #app_versions = [x['ver'] for x in all_apps if deploy_env in x['env']]
-        #return {'versions': app_versions}
-        return {'versions': "tom"}
+        all_apps = requests.get('{}/apps'.format(releases_endpoint)).json()
+        app_versions = [x['ver'] for x in all_apps if deploy_env == x['env'] and app_name in x['an']]
+        if app_versions:
+            return {'versions': app_versions}
+        else:
+            return {}, 404
+        #return all_apps
 
 
 #@FLASK_APP.route('/api/promote/<deploy_env>/<app_name>/<app_version>',
