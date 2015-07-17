@@ -11,16 +11,16 @@ class WristbandTestCase(unittest.TestCase):
     def setUp(self):
         wristband.app.config['ENVIRONMENTS'] = {
             "qa-zone_one": {
-                "jenkins_uri": "http://qa-zone_one"
+                "jenkins_uri": "https://qa-zone_one"
             },
             "qa-zone_two": {
-                "jenkins_uri": "http://qa-zone_two"
+                "jenkins_uri": "https://qa-zone_two"
             },
             "staging-zone_one": {
-                "jenkins_uri": "http://username:pass@staging-zone_one"
+                "jenkins_uri": "https://username:pass@staging-zone_one"
             },
             "staging-zone_two": {
-                "jenkins_uri": "http://staging-zone_two"
+                "jenkins_uri": "https://staging-zone_two"
             },
         }
         wristband.app.config['PIPELINES'] = {

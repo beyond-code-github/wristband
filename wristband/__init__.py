@@ -10,11 +10,7 @@ app = Flask(__name__)
 api = Api(app)
 
 app.config.from_envvar("CONFIG_FILE", "config/production.py")
-
 releases_endpoint = "https://releases.tax.service.gov.uk"
-
-#ENVIRONMENTS = app.config.get('ENVIRONMENTS')
-
 
 def api_route(self, *args, **kwargs):
     def wrapper(cls):
@@ -75,6 +71,7 @@ class Promotions(Resource):
         # Hardcoded for speed !!!!
         pipeline = app.config.get('PIPELINES')[deploy_env.split("-")[1]]
         pipeline_position = pipeline.index(deploy_env)
+
         if pipeline_position != 0:
             # We're not the first environment in the pipeline, check previous
             releases = get_all_releases()
@@ -84,11 +81,11 @@ class Promotions(Resource):
 
         jenkins_uri = app.config['ENVIRONMENTS'][deploy_env]["jenkins_uri"]
         parsed_jenkins_uri = urlparse(jenkins_uri)
-        # Very hacky 
+        # Very hacky
         jenkins = Jenkins(jenkins_uri.replace("{}:{}@".format(parsed_jenkins_uri.username, parsed_jenkins_uri.password), ""), username=parsed_jenkins_uri.username, password=parsed_jenkins_uri.password)
         dm = jenkins.get_job("deploy-microservice")
-        params = {"APP": app_name, "APP_BUILD_NUMBER": app_version} 
-        running_job = dm.invoke(build_params=params)
+        params = {"APP": app_name, "APP_BUILD_NUMBER": app_version}
+        running_job = dm.invoke(build_params=params, securitytoken=None)
         def gen():
             yield sse("message", "queued")
             running_job.block_until_building()
