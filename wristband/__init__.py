@@ -20,44 +20,64 @@ def api_route(self, *args, **kwargs):
 
 api.route = types.MethodType(api_route, api)
 
-
 @api.route('/ping/ping')
 class Ping(Resource):
     def get(self):
         return {'status': 'OK'}
 
-
 @api.route('/api/config')
 class APIConfig(Resource):
     def get(self):
-        envs = {
-            'envs': {
-                'QA': [
-                    'qa-left',
-                    'qa-right'
-                ],
-                'Staging': [
-                    'staging-left',
-                    'staging-right'
-                ]
-            },
-        }
-        #'apps': Releases().apps()
-        return envs
+        pipelines = get_all_pipelines()
+        config = {'pipelines': pipelines}
+        releases_all_envs = get_all_releases()
 
+        config["apps"] = []
+        for app in get_all_app_names(releases_all_envs):
+            config["apps"].append({ "name": app, "envs" : {} })
+            for env in get_all_environments():
+                versions = get_all_releases_of_app_in_env(env, app, releases_all_envs)
+                if versions:
+                    config["apps"][-1]["envs"][env] = { "versions": versions }
 
-@api.route('/api/versions/<deploy_env>/<app_name>')
-class EnvVersionsResource(Resource):
-    def get(self, deploy_env, app_name):
-        sorted_app_versions = [x['ver'] for x in get_all_releases() if deploy_env == x['env'] and app_name == x['an']]
-        if sorted_app_versions:
-            return {'versions': sorted_app_versions}
+        if config:
+            return config
         else:
             return {}, 404
 
 def get_all_releases():
-    return requests.get('{}/apps'.format(releases_endpoint)).json()
+    data = requests.get('{}/apps'.format(releases_endpoint)).json()
+    return data
 
+def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
+    releases_for_env = []
+    for release in releases:
+        if deploy_env == release.get("env") and app_name == release['an']:
+            del release['an']
+            del release['env']
+            releases_for_env.append(release)
+    return sorted(releases_for_env, key=lambda k: k['ver'], reverse=True)
+
+def get_all_app_names(releases):
+    apps_in_environment = sorted(set([release["an"] for release in releases]))
+    return apps_in_environment
+
+def get_all_app_names_in_env(env, releases):
+    apps_in_environment = sorted(set([release["an"] for release in releases if release.get("env") == env]))
+    return apps_in_environment
+
+def get_all_environments():
+    pipeline_list = get_all_pipelines()
+    environments = []
+    for pipeline in pipeline_list:
+        environments.extend(get_envs_in_pipeline(pipeline))
+    return environments
+
+def get_all_pipelines():
+    return app.config.get('PIPELINES')
+
+def get_envs_in_pipeline(pipeline):
+    return app.config.get('PIPELINES')[pipeline]
 
 def sse(event, data):
     return "".join([
