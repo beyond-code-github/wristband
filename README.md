@@ -12,7 +12,15 @@ It speaks HTTP and JSON and executes actions defined by you. It is designed to w
 
 ## Installation
 
-Run `setup.py` and then `wristband`.
+To run wristband;
+
+$ virtualenv env
+$ source env/bin/activate
+$ pip install -r requirements.txt
+
+For tests run this in addition to the ones above;
+pip install -r requirements-tests.txt
+
 
 ## Requirements
 
@@ -26,6 +34,19 @@ Run `setup.py` and then `wristband`.
 | ---- | ----------------- | ----------- |
 | `/ping/ping` | GET | Healthcheck |
 
+## Running wristband
+
+PIPELINES='one,two'  \
+ENVIRONMENTS='qa-one,qa-two,staging-one,staging-two' \
+ENVIRONMENT_qa_one_jenkins_uri=https://wristband:pass@deploy-qa-one.tax.service.gov.uk  \
+ENVIRONMENT_qa_two_jenkins_uri=https://deploy-qa-two.tax.service.gov.uk  \
+ENVIRONMENT_staging_one_jenkins_uri=https://wristband:pass@deploy-staging-one.tax.service.gov.uk  \
+ENVIRONMENT_staging_two_jenkins_uri=https://deploy-staging-two.tax.service.gov.uk  \
+PIPELINE_one=qa-one,staging-one \
+PIPELINE_two=qa-two,staging-two
+CONFIG_FILE=config/production.py
+python wristband/__init__.py
+
 ## Contributing
 
 0. Fork this repo
@@ -34,3 +55,8 @@ Run `setup.py` and then `wristband`.
 3. Open a pull request with your branch
 
 [1]: https://github.tools.tax.service.gov.uk/HMRC/wristband-frontend
+
+
+TODO
+--
+* Validate envronment options
