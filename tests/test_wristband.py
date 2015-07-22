@@ -77,7 +77,7 @@ class WristbandTestCase(unittest.TestCase):
                 "ver": "0.0.3"
             }
         ]
-        rv = self.app.post('/api/promote/staging-zone_one/my-app/0.0.8')
+        rv = self.app.get('/api/promote/staging-zone_one/my-app/0.0.8')
         self.assertEqual(400, rv.status_code)
         self.assertEqual(
             {"error": "you need to deploy 0.0.8 to qa-zone_one first"}, json.loads(rv.data))
