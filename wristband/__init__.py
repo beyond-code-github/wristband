@@ -37,8 +37,8 @@ def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
 
 
 def get_all_app_names(releases):
-    apps_in_environment = sorted(set([release["an"] for release in releases]))
-    return apps_in_environment
+    all_app_names = sorted(set([release["an"] for release in releases]))
+    return all_app_names
 
 
 def get_all_app_names_in_env(env, releases):

@@ -31,13 +31,13 @@ class WristbandTestCase(unittest.TestCase):
         wristband.releases = [
             {
                 "an": "test-app",
-                "env": "qa",
+                "env": "staging-zone_one",
                 "ls": 10,
                 "ver": "0.0.3"
             },
             {
                 "an": "test-app",
-                "env": "qa",
+                "env": "qa-zone_two",
                 "ls": 9,
                 "ver": "0.0.8"
             },
@@ -49,23 +49,24 @@ class WristbandTestCase(unittest.TestCase):
             },
             {
                 "an": "test-app-frontend",
-                "env": "qa-test",
+                "env": "staging-zone_two",
                 "ls": 69,
                 "ver": "3.0.11"
             },
             {
                 "an": "test-app",
-                "env": "qa",
+                "env": "qa-zone_two",
                 "ls": 8,
                 "ver": "0.0.2"
             },
             {
                 "an": "test-app-thing",
-                "env": "qa",
+                "env": "qa-zone_one",
                 "ls": 99,
                 "ver": "0.0.99"
             }
         ]
+        wristband.environments = [ 'qa-one', 'qa-two', 'staging-one', 'staging-two' ]
 
     def test_ping_ping(self):
         rv = self.app.get('/ping/ping')
@@ -96,13 +97,10 @@ class WristbandTestCase(unittest.TestCase):
         self.assertEqual(['qa-zone_one', 'staging-zone_one'], wristband.get_envs_in_pipeline(pipeline))
 
     def test_get_all_releases_of_app_in_env(self):
-        deploy_env = "qa"
+        """test_get_all_releases_of_app_in_env"""
+        deploy_env = "qa-zone_two"
         app_name = "test-app"
         expected_data = [
-            {
-                "ls": 10,
-                "ver": "0.0.3"
-            },
             {
                 "ls": 9,
                 "ver": "0.0.8"
@@ -119,18 +117,20 @@ class WristbandTestCase(unittest.TestCase):
         self.assertEqual(expected_result, wristband.get_all_app_names(wristband.releases))
 
     def test_get_all_app_names_in_env(self):
-        env = 'qa-test'
+        env = 'staging-zone_two'
         expected_result = ['test-app-frontend']
         self.assertEqual(expected_result, wristband.get_all_app_names_in_env(env, wristband.releases))
 
     @mock.patch('wristband.get_all_pipelines')
     def test_get_all_environments(self, all_pipelines_mock):
-        all_pipelines_mock.return_value =  {
-            "zone_one": ["qa-zone_one", "staging-zone_one"],
-            "zone_two": ["qa-zone_two", "staging-zone_two"],
-        }
+        all_pipelines_mock.return_value = wristband.app.config.get('PIPELINES')
         expected_data = ['qa-zone_one', 'qa-zone_two', 'staging-zone_one', 'staging-zone_two']
         self.assertEqual(expected_data, wristband.get_all_environments())
+
+    def test_make_environment_groups(self):
+        expected_data = {'qa': ['qa-one', 'qa-two'], 'staging': ['staging-one', 'staging-two']}
+        self.assertEqual(expected_data, wristband.make_environment_groups(wristband.environments))
+
 
     @mock.patch('wristband.get_all_releases')
     def test_promote_fails_if_not_deployed_to_previous_environment(self, all_releases_mock):
@@ -147,6 +147,28 @@ class WristbandTestCase(unittest.TestCase):
         self.assertEqual(400, rv.status_code)
         self.assertEqual(
             {"error": "you need to deploy 0.0.8 to qa-zone_one first"}, json.loads(rv.data))
+
+
+    @mock.patch('wristband.get_all_releases')
+    def test_api_config_endpoint(self, all_releases_mock):
+        all_releases_mock.return_value = [
+            {
+                "an": "app-1",
+                "env": "staging-zone_one",
+                "ls": 18,
+                "ver": "0.4.3"
+            },
+            {
+                "an": "app-2",
+                "env": "staging-zone_two",
+                "ls": 10,
+                "ver": "0.0.3"
+            }
+        ]
+        expected_data = '{"envs": {"qa": ["qa-zone_one", "qa-zone_two"], "staging": ["staging-zone_one", "staging-zone_two"]}, "apps": [{"envs": {"staging-zone_one": {"versions": [{"ver": "0.4.3", "ls": 18}]}}, "name": "app-1"}, {"envs": {"staging-zone_two": {"versions": [{"ver": "0.0.3", "ls": 10}]}}, "name": "app-2"}], "pipelines": {"zone_two": ["qa-zone_two", "staging-zone_two"], "zone_one": ["qa-zone_one", "staging-zone_one"]}}'
+        endpoint = self.app.get('/api/config')
+        self.assertEqual(expected_data, endpoint.data)
+
 
     @mock.patch('wristband.Jenkins')
     @mock.patch('wristband.get_all_releases')
