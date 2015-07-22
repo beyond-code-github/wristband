@@ -28,6 +28,44 @@ class WristbandTestCase(unittest.TestCase):
             "zone_two": ["qa-zone_two", "staging-zone_two"],
         }
         self.app = wristband.app.test_client()
+        wristband.releases = [
+            {
+                "an": "test-app",
+                "env": "qa",
+                "ls": 10,
+                "ver": "0.0.3"
+            },
+            {
+                "an": "test-app",
+                "env": "qa",
+                "ls": 9,
+                "ver": "0.0.8"
+            },
+            {
+                "an": "test-app",
+                "env": "qa-wrong",
+                "ls": 11,
+                "ver": "0.0.11"
+            },
+            {
+                "an": "test-app-frontend",
+                "env": "qa-test",
+                "ls": 69,
+                "ver": "3.0.11"
+            },
+            {
+                "an": "test-app",
+                "env": "qa",
+                "ls": 8,
+                "ver": "0.0.2"
+            },
+            {
+                "an": "test-app-thing",
+                "env": "qa",
+                "ls": 99,
+                "ver": "0.0.99"
+            }
+        ]
 
     def test_ping_ping(self):
         rv = self.app.get('/ping/ping')
@@ -60,38 +98,6 @@ class WristbandTestCase(unittest.TestCase):
     def test_get_all_releases_of_app_in_env(self):
         deploy_env = "qa"
         app_name = "test-app"
-        releases = [
-            {
-                "an": "test-app",
-                "env": "qa",
-                "ls": 10,
-                "ver": "0.0.3"
-            },
-            {
-                "an": "test-app",
-                "env": "qa",
-                "ls": 9,
-                "ver": "0.0.8"
-            },
-            {
-                "an": "test-app",
-                "env": "qa-wrong",
-                "ls": 11,
-                "ver": "0.0.11"
-            },
-            {
-                "an": "test-app",
-                "env": "qa",
-                "ls": 8,
-                "ver": "0.0.2"
-            },
-            {
-                "an": "test-app-thing",
-                "env": "qa",
-                "ls": 99,
-                "ver": "0.0.99"
-            }
-        ]
         expected_data = [
             {
                 "ls": 10,
@@ -106,7 +112,16 @@ class WristbandTestCase(unittest.TestCase):
                 "ver": "0.0.2"
             },
         ]
-        self.assertEqual(expected_data, wristband.get_all_releases_of_app_in_env(deploy_env, app_name, releases))
+        self.assertEqual(expected_data, wristband.get_all_releases_of_app_in_env(deploy_env, app_name, wristband.releases))
+
+    def test_get_all_app_names(self):
+        expected_result = ['test-app', 'test-app-frontend', 'test-app-thing']
+        self.assertEqual(expected_result, wristband.get_all_app_names(wristband.releases))
+
+    def test_get_all_app_names_in_env(self):
+        env = 'qa-test'
+        expected_result = ['test-app-frontend']
+        self.assertEqual(expected_result, wristband.get_all_app_names_in_env(env, wristband.releases))
 
     @mock.patch('wristband.get_all_pipelines')
     def test_get_all_environments(self, all_pipelines_mock):
@@ -149,13 +164,12 @@ class WristbandTestCase(unittest.TestCase):
             "event: message\ndata: building\n\n"
             "event: message\ndata: success\n\n"
         ])
-        rv = self.app.post('/api/promote/staging-zone_one/my-app/0.0.8')
+        rv = self.app.get('/api/promote/staging-zone_one/my-app/0.0.8')
         self.assertTrue(rv.is_streamed)
         self.assertEquals(rv.content_type, 'text/event-stream')
         self.assertEqual(expected_response, rv.data)
         print jenkins_mock.mock_calls
         jenkins_mock.assert_has_calls([mock.call(wristband.app.config['ENVIRONMENTS']["staging-zone_one"]["jenkins_uri"].replace("username:pass@", ""), username="username", password="pass")], any_order=True)
-
 
 
 if __name__ == '__main__':
