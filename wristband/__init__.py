@@ -62,6 +62,14 @@ def get_envs_in_pipeline(pipeline):
     return app.config.get('PIPELINES')[pipeline]
 
 
+def make_environment_groups(environments):
+    shortenvs = sorted(set([short.split('-')[0] for short in environments]))
+    envgroups = {}
+    for shortenv in shortenvs:
+        envgroups[shortenv] = [env for env in environments if shortenv in env]
+    return envgroups
+
+
 def sse(event, data):
     return "".join([
         "event: {}\n".format(event),
@@ -79,16 +87,19 @@ class Ping(Resource):
 class APIConfig(Resource):
     def get(self):
         pipelines = get_all_pipelines()
-        config = {'pipelines': pipelines}
         releases_all_envs = get_all_releases()
+        environments = get_all_environments()
+        envgroups = make_environment_groups(environments)
+        config = {'pipelines': pipelines,
+                  'envs' : envgroups }
 
         config["apps"] = []
         for app in get_all_app_names(releases_all_envs):
-            config["apps"].append({ "name": app, "envs" : {} })
-            for env in get_all_environments():
+            config['apps'].append({ 'name' : app, 'envs' : {} })
+            for env in environments:
                 versions = get_all_releases_of_app_in_env(env, app, releases_all_envs)
                 if versions:
-                    config["apps"][-1]["envs"][env] = { "versions": versions }
+                    config['apps'][-1]['envs'][env] = { 'versions': versions }
 
         if config:
             return config
