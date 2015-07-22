@@ -109,7 +109,7 @@ class APIConfig(Resource):
 
 @api.route('/api/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotions(Resource):
-    def post(self, deploy_env, app_name, app_version):
+    def get(self, deploy_env, app_name, app_version):
         # Hardcoded for speed !!!!
         pipeline = app.config.get('PIPELINES')[deploy_env.split("-")[1]]
         pipeline_position = pipeline.index(deploy_env)
