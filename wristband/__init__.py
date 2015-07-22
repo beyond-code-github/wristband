@@ -20,10 +20,60 @@ def api_route(self, *args, **kwargs):
 
 api.route = types.MethodType(api_route, api)
 
+
+def get_all_releases():
+    data = requests.get('{}/apps'.format(releases_endpoint)).json()
+    return data
+
+
+def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
+    releases_for_env = []
+    for release in releases:
+        if deploy_env == release.get("env") and app_name == release['an']:
+            del release['an']
+            del release['env']
+            releases_for_env.append(release)
+    return sorted(releases_for_env, key=lambda k: k['ver'])#, reverse=True)
+
+
+def get_all_app_names(releases):
+    apps_in_environment = sorted(set([release["an"] for release in releases]))
+    return apps_in_environment
+
+
+def get_all_app_names_in_env(env, releases):
+    apps_in_environment = sorted(set([release["an"] for release in releases if release.get("env") == env]))
+    return apps_in_environment
+
+
+def get_all_environments():
+    pipeline_list = get_all_pipelines()
+    environments = []
+    for pipeline in pipeline_list:
+        environments.extend(get_envs_in_pipeline(pipeline))
+    return environments
+
+
+def get_all_pipelines():
+    return app.config.get('PIPELINES')
+
+
+def get_envs_in_pipeline(pipeline):
+    return app.config.get('PIPELINES')[pipeline]
+
+
+def sse(event, data):
+    return "".join([
+        "event: {}\n".format(event),
+        "data: {}\n\n".format(str(data))
+    ])
+
+
 @api.route('/ping/ping')
 class Ping(Resource):
     def get(self):
         return {'status': 'OK'}
+
 
 @api.route('/api/config')
 class APIConfig(Resource):
@@ -45,45 +95,6 @@ class APIConfig(Resource):
         else:
             return {}, 404
 
-def get_all_releases():
-    data = requests.get('{}/apps'.format(releases_endpoint)).json()
-    return data
-
-def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
-    releases_for_env = []
-    for release in releases:
-        if deploy_env == release.get("env") and app_name == release['an']:
-            del release['an']
-            del release['env']
-            releases_for_env.append(release)
-    return sorted(releases_for_env, key=lambda k: k['ver'], reverse=True)
-
-def get_all_app_names(releases):
-    apps_in_environment = sorted(set([release["an"] for release in releases]))
-    return apps_in_environment
-
-def get_all_app_names_in_env(env, releases):
-    apps_in_environment = sorted(set([release["an"] for release in releases if release.get("env") == env]))
-    return apps_in_environment
-
-def get_all_environments():
-    pipeline_list = get_all_pipelines()
-    environments = []
-    for pipeline in pipeline_list:
-        environments.extend(get_envs_in_pipeline(pipeline))
-    return environments
-
-def get_all_pipelines():
-    return app.config.get('PIPELINES')
-
-def get_envs_in_pipeline(pipeline):
-    return app.config.get('PIPELINES')[pipeline]
-
-def sse(event, data):
-    return "".join([
-        "event: {}\n".format(event),
-        "data: {}\n\n".format(str(data))
-    ])
 
 @api.route('/api/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotions(Resource):
