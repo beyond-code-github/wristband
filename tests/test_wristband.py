@@ -42,10 +42,10 @@ class WristbandTestCase(unittest.TestCase):
     def test_get_env_versions_bad_app_raises_404(self, all_releases_mock):
         all_releases_mock().json = mock.MagicMock(return_value=[
             {
-                "an": "test-app", 
-                "env": "qa", 
-                "fs": 1437036901, 
-                "ls": 1437036901, 
+                "an": "test-app",
+                "env": "qa",
+                "fs": 1437036901,
+                "ls": 1437036901,
                 "ver": "2.1.3"
             }
         ])
@@ -53,48 +53,18 @@ class WristbandTestCase(unittest.TestCase):
         rv = self.app.get('/api/versions/QA/bad')
         self.assertEqual(404, rv.status_code)
 
-    @mock.patch('wristband.get_all_releases')
-    def test_get_env_versions_returns_expected_versions(self, all_releases_mock):
-        all_releases_mock.return_value = [
-            # latest last seen in the correct environment
-            {
-                "an": "test-app",
-                "env": "qa",
-                "ls": 10,
-                "ver": "0.0.3"
-            },
-            # newer version but older last seen
-            {
-                "an": "test-app",
-                "env": "qa",
-                "ls": 9,
-                "ver": "0.0.8"
-            },
-            # newer last seen but wrong env
-            {
-                "an": "test-app",
-                "env": "qa-wrong",
-                "ls": 11,
-                "ver": "0.0.11"
-            },
-            # correct env but older last seen
-            {
-                "an": "test-app",
-                "env": "qa",
-                "ls": 8,
-                "ver": "0.0.2"
-            },
-            # another app
-            {
-                "an": "test-app-thing",
-                "env": "qa",
-                "ls": 99,
-                "ver": "0.0.99"
-            }
-        ]
-        expected_data = {"versions": ["0.0.3", "0.0.8", "0.0.2"]}
-        rv = self.app.get('/api/versions/qa/test-app')
-        self.assertEqual(expected_data, json.loads(rv.data))
+    def test_get_envs_in_pipeline(self):
+        pipeline = 'zone_one'
+        self.assertEqual(['qa-zone_one', 'staging-zone_one'], wristband.get_envs_in_pipeline(pipeline))
+
+    @mock.patch('wristband.get_all_pipelines')
+    def test_get_all_environments(self, all_pipelines_mock):
+        all_pipelines_mock.return_value =  {
+            "zone_one": ["qa-zone_one", "staging-zone_one"],
+            "zone_two": ["qa-zone_two", "staging-zone_two"],
+        }
+        expected_data = ['qa-zone_one', 'qa-zone_two', 'staging-zone_one', 'staging-zone_two']
+        self.assertEqual(expected_data, wristband.get_all_environments())
 
     @mock.patch('wristband.get_all_releases')
     def test_promote_fails_if_not_deployed_to_previous_environment(self, all_releases_mock):

@@ -51,7 +51,7 @@ def get_all_environments():
     environments = []
     for pipeline in pipeline_list:
         environments.extend(get_envs_in_pipeline(pipeline))
-    return environments
+    return sorted(environments)
 
 
 def get_all_pipelines():
