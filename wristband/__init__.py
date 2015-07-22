@@ -33,7 +33,7 @@ def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
             del release['an']
             del release['env']
             releases_for_env.append(release)
-    return sorted(releases_for_env, key=lambda k: k['ls'])#, reverse=True)
+    return sorted(releases_for_env, key=lambda k: k['ls']), reverse=True)
 
 
 def get_all_app_names(releases):
