@@ -57,6 +57,57 @@ class WristbandTestCase(unittest.TestCase):
         pipeline = 'zone_one'
         self.assertEqual(['qa-zone_one', 'staging-zone_one'], wristband.get_envs_in_pipeline(pipeline))
 
+    def test_get_all_releases_of_app_in_env(self):
+        deploy_env = "qa"
+        app_name = "test-app"
+        releases = [
+            {
+                "an": "test-app",
+                "env": "qa",
+                "ls": 10,
+                "ver": "0.0.3"
+            },
+            {
+                "an": "test-app",
+                "env": "qa",
+                "ls": 9,
+                "ver": "0.0.8"
+            },
+            {
+                "an": "test-app",
+                "env": "qa-wrong",
+                "ls": 11,
+                "ver": "0.0.11"
+            },
+            {
+                "an": "test-app",
+                "env": "qa",
+                "ls": 8,
+                "ver": "0.0.2"
+            },
+            {
+                "an": "test-app-thing",
+                "env": "qa",
+                "ls": 99,
+                "ver": "0.0.99"
+            }
+        ]
+        expected_data = [
+            {
+                "ls": 10,
+                "ver": "0.0.3"
+            },
+            {
+                "ls": 9,
+                "ver": "0.0.8"
+            },
+            {
+                "ls": 8,
+                "ver": "0.0.2"
+            },
+        ]
+        self.assertEqual(expected_data, wristband.get_all_releases_of_app_in_env(deploy_env, app_name, releases))
+
     @mock.patch('wristband.get_all_pipelines')
     def test_get_all_environments(self, all_pipelines_mock):
         all_pipelines_mock.return_value =  {
