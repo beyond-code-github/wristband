@@ -33,7 +33,7 @@ def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
             del release['an']
             del release['env']
             releases_for_env.append(release)
-    return sorted(releases_for_env, key=lambda k: k['ls'])#, reverse=True)
+    return sorted(releases_for_env, key=lambda k: k['ls'], reverse=True)
 
 
 def get_all_app_names(releases):
@@ -109,7 +109,7 @@ class APIConfig(Resource):
 
 @api.route('/api/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotions(Resource):
-    def post(self, deploy_env, app_name, app_version):
+    def get(self, deploy_env, app_name, app_version):
         # Hardcoded for speed !!!!
         pipeline = app.config.get('PIPELINES')[deploy_env.split("-")[1]]
         pipeline_position = pipeline.index(deploy_env)
