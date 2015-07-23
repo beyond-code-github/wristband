@@ -95,6 +95,21 @@ class WristbandTestCase(unittest.TestCase):
     def test_get_envs_in_pipeline(self):
         pipeline = 'zone_one'
         self.assertEqual(['qa-zone_one', 'staging-zone_one'], wristband.get_envs_in_pipeline(pipeline))
+    @mock.patch('requests.get')
+    def test_get_all_releases(self,all_releases_mock):
+        all_releases_mock().json = mock.MagicMock(return_value=[
+            {
+                "an": "test-app",
+                "env": "qa",
+                "fs": 1437036901,
+                "ls": 1437036901,
+                "ver": "2.1.3"
+            }
+        ])
+        expected_data = [{'fs': 1437036901, 'ver': '2.1.3', 'ls': 1437036901, 'env': 'qa', 'an': 'test-app'}]
+        self.assertEqual(expected_data,wristband.get_all_releases())
+
+
 
     def test_get_all_releases_of_app_in_env(self):
         """test_get_all_releases_of_app_in_env"""
@@ -190,7 +205,6 @@ class WristbandTestCase(unittest.TestCase):
         self.assertTrue(rv.is_streamed)
         self.assertEquals(rv.content_type, 'text/event-stream')
         self.assertEqual(expected_response, rv.data)
-        print jenkins_mock.mock_calls
         jenkins_mock.assert_has_calls([mock.call(wristband.app.config['ENVIRONMENTS']["staging-zone_one"]["jenkins_uri"].replace("username:pass@", ""), username="username", password="pass")], any_order=True)
 
 

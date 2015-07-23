@@ -5,6 +5,7 @@ import json
 import requests
 from jenkinsapi.jenkins import Jenkins
 from urlparse import urlparse
+import os
 
 app = Flask(__name__)
 api = Api(app)
@@ -138,5 +139,5 @@ class Promotions(Resource):
 
 
 if __name__ == '__main__':
-    import os
+
     app.run(debug=True, port=int(os.getenv("PORT", "5000")))
