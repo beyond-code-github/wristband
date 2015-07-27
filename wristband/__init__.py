@@ -134,7 +134,7 @@ class Promotions(Resource):
             running_job.block_until_building()
             yield sse("message", "building")
             running_job.block_until_complete()
-            yield sse("message", "success" if running_job.is_good() else "failed")
+            yield sse("message", "success" if running_job.get_build().is_good() else "failed")
         return Response(gen(), content_type="text/event-stream")
 
 
