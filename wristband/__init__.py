@@ -1,18 +1,22 @@
 import types
 from urlparse import urlparse
 import os
+from collections import namedtuple
 
 from flask import Flask, Response
 from flask_restful import Resource, Api
 import requests
 from jenkinsapi.jenkins import Jenkins
 
+from data_structures import Release
+
 app = Flask(__name__)
 api = Api(app)
 
 app.config.from_envvar("CONFIG_FILE", "config/production.py")
-releases_endpoint = "https://releases.tax.service.gov.uk"
+RELEASES_ENDPOINT = "https://releases.tax.service.gov.uk"
 
+MessageTuple = namedtuple('MessageTuple', ['key', 'value'])
 
 def api_route(self, *args, **kwargs):
     def wrapper(cls):
@@ -26,28 +30,23 @@ api.route = types.MethodType(api_route, api)
 
 
 def get_all_releases():
-    data = requests.get('{}/apps'.format(releases_endpoint)).json()
-    return data
+    return [Release.from_dictionary(release) for release in requests.get('{}/apps'.format(RELEASES_ENDPOINT)).json()]
 
 
 def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
     releases_for_env = []
     for release in releases:
-        if deploy_env == release.get("env") and app_name == release['an']:
-            del release['an']
-            del release['env']
+        if deploy_env == release.environment and app_name == release.app_name:
             releases_for_env.append(release)
-    return sorted(releases_for_env, key=lambda k: k['ls'], reverse=True)
+    return sorted(releases_for_env, key=lambda a: a.last_seen, reverse=True)
 
 
 def get_all_app_names(releases):
-    all_app_names = sorted(set([release["an"] for release in releases]))
-    return all_app_names
+    return frozenset([release.app_name for release in releases])
 
 
 def get_all_app_names_in_env(env, releases):
-    apps_in_environment = sorted(set([release["an"] for release in releases if release.get("env") == env]))
-    return apps_in_environment
+    return frozenset([release.app_name for release in releases if release.environment == env])
 
 
 def get_all_environments():
@@ -67,18 +66,20 @@ def get_envs_in_pipeline(pipeline):
 
 
 def make_environment_groups(environments):
-    shortenvs = sorted(set([short.split('-')[0] for short in environments]))
+    shortenvs = frozenset([short.split('-')[0] for short in environments])
     envgroups = {}
     for shortenv in shortenvs:
         envgroups[shortenv] = [env for env in environments if shortenv in env]
     return envgroups
 
 
-def sse(event, data):
-    return "".join([
-        "event: {}\n".format(event),
-        "data: {}\n\n".format(str(data))
-    ])
+def sse(messages):
+    """
+
+    :param messages: Tuple of named tuples contaning key and data
+    :return:
+    """
+    return "".join(["{key}: {value}".format(message.key, str(message.value)) for message in messages])
 
 
 @api.route('/ping/ping')
@@ -119,8 +120,8 @@ class Promotions(Resource):
         if pipeline_position != 0:
             # We're not the first environment in the pipeline, check previous
             releases = get_all_releases()
-            app_version_in_environments = [r["env"] for r in releases if
-                                           r["an"] == app_name and r["ver"] == app_version]
+            app_version_in_environments = [release.environment for release in releases if
+                                           release.app_name == app_name and release.version == app_version]
             if pipeline[pipeline_position - 1] not in app_version_in_environments:
                 return {"error": "you need to deploy {} to {} first".format(app_version,
                                                                             pipeline[pipeline_position - 1])}, 400
@@ -136,11 +137,14 @@ class Promotions(Resource):
         running_job = dm.invoke(build_params=params, securitytoken=None)
 
         def gen():
-            yield sse("queued", {"status": "OK"})
+            yield sse((MessageTuple(key="message", value="queued"),
+                       MessageTuple(key="data", value={"status": "OK"})))
             running_job.block_until_building()
-            yield sse("building", {"status": "OK"})
+            yield sse((MessageTuple(key="message", value="building"),
+                       MessageTuple(key="data", value={"status": "OK"})))
             running_job.block_until_complete()
-            yield sse("success" if running_job.get_build().is_good() else "failed", {"status": "OK"})
+            yield sse((MessageTuple(key="message", value="success" if running_job.get_build().is_good() else "failed"),
+                       MessageTuple(key="data", value={"status": "OK"})))
 
         return Response(gen(), content_type="text/event-stream")
 
