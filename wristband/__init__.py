@@ -13,11 +13,14 @@ api = Api(app)
 app.config.from_envvar("CONFIG_FILE", "config/production.py")
 releases_endpoint = "https://releases.tax.service.gov.uk"
 
+
 def api_route(self, *args, **kwargs):
     def wrapper(cls):
         self.add_resource(cls, *args, **kwargs)
         return cls
+
     return wrapper
+
 
 api.route = types.MethodType(api_route, api)
 
@@ -94,11 +97,11 @@ class APIConfig(Resource):
         config = {'pipelines': pipelines, 'envs': envgroups, "apps": []}
 
         for app in get_all_app_names(releases_all_envs):
-            config['apps'].append({ 'name' : app, 'envs' : {} })
+            config['apps'].append({'name': app, 'envs': {}})
             for env in environments:
                 versions = get_all_releases_of_app_in_env(env, app, releases_all_envs)
                 if versions:
-                    config['apps'][-1]['envs'][env] = { 'versions': versions }
+                    config['apps'][-1]['envs'][env] = {'versions': versions}
 
         if config:
             return config
@@ -143,5 +146,4 @@ class Promotions(Resource):
 
 
 if __name__ == '__main__':
-
     app.run(debug=True, port=int(os.getenv("PORT", "5000")))

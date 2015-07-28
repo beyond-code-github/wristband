@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-import wristband
 import unittest
 import json
+
 import mock
+
+import wristband
 
 
 class WristbandTestCase(unittest.TestCase):
-
     def setUp(self):
         wristband.app.config['ENVIRONMENTS'] = {
             "qa-zone_one": {
@@ -66,7 +67,7 @@ class WristbandTestCase(unittest.TestCase):
                 "ver": "0.0.99"
             }
         ]
-        wristband.environments = [ 'qa-one', 'qa-two', 'staging-one', 'staging-two' ]
+        wristband.environments = ['qa-one', 'qa-two', 'staging-one', 'staging-two']
 
     def test_ping_ping(self):
         rv = self.app.get('/ping/ping')
@@ -95,8 +96,9 @@ class WristbandTestCase(unittest.TestCase):
     def test_get_envs_in_pipeline(self):
         pipeline = 'zone_one'
         self.assertEqual(['qa-zone_one', 'staging-zone_one'], wristband.get_envs_in_pipeline(pipeline))
+
     @mock.patch('requests.get')
-    def test_get_all_releases(self,all_releases_mock):
+    def test_get_all_releases(self, all_releases_mock):
         all_releases_mock().json = mock.MagicMock(return_value=[
             {
                 "an": "test-app",
@@ -107,9 +109,7 @@ class WristbandTestCase(unittest.TestCase):
             }
         ])
         expected_data = [{'fs': 1437036901, 'ver': '2.1.3', 'ls': 1437036901, 'env': 'qa', 'an': 'test-app'}]
-        self.assertEqual(expected_data,wristband.get_all_releases())
-
-
+        self.assertEqual(expected_data, wristband.get_all_releases())
 
     def test_get_all_releases_of_app_in_env(self):
         """test_get_all_releases_of_app_in_env"""
@@ -125,7 +125,8 @@ class WristbandTestCase(unittest.TestCase):
                 "ver": "0.0.2"
             },
         ]
-        self.assertEqual(expected_data, wristband.get_all_releases_of_app_in_env(deploy_env, app_name, wristband.releases))
+        self.assertEqual(expected_data,
+                         wristband.get_all_releases_of_app_in_env(deploy_env, app_name, wristband.releases))
 
     def test_get_all_app_names(self):
         expected_result = ['test-app', 'test-app-frontend', 'test-app-thing']
@@ -146,7 +147,6 @@ class WristbandTestCase(unittest.TestCase):
         expected_data = {'qa': ['qa-one', 'qa-two'], 'staging': ['staging-one', 'staging-two']}
         self.assertEqual(expected_data, wristband.make_environment_groups(wristband.environments))
 
-
     @mock.patch('wristband.get_all_releases')
     def test_promote_fails_if_not_deployed_to_previous_environment(self, all_releases_mock):
         ### Should this be a SSE????
@@ -162,7 +162,6 @@ class WristbandTestCase(unittest.TestCase):
         self.assertEqual(400, rv.status_code)
         self.assertEqual(
             {"error": "you need to deploy 0.0.8 to qa-zone_one first"}, json.loads(rv.data))
-
 
     @mock.patch('wristband.get_all_releases')
     def test_api_config_endpoint(self, all_releases_mock):
@@ -184,7 +183,6 @@ class WristbandTestCase(unittest.TestCase):
         endpoint = self.app.get('/api/config')
         self.assertEqual(expected_data, endpoint.data)
 
-
     @mock.patch('wristband.Jenkins')
     @mock.patch('wristband.get_all_releases')
     def test_promote_sse_stream(self, all_releases_mock, jenkins_mock):
@@ -205,7 +203,9 @@ class WristbandTestCase(unittest.TestCase):
         self.assertTrue(rv.is_streamed)
         self.assertEquals(rv.content_type, 'text/event-stream')
         self.assertEqual(expected_response, rv.data)
-        jenkins_mock.assert_has_calls([mock.call(wristband.app.config['ENVIRONMENTS']["staging-zone_one"]["jenkins_uri"].replace("username:pass@", ""), username="username", password="pass")], any_order=True)
+        jenkins_mock.assert_has_calls([mock.call(
+            wristband.app.config['ENVIRONMENTS']["staging-zone_one"]["jenkins_uri"].replace("username:pass@", ""),
+            username="username", password="pass")], any_order=True)
 
 
 if __name__ == '__main__':
