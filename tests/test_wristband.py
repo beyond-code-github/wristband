@@ -197,9 +197,9 @@ class WristbandTestCase(unittest.TestCase):
             }
         ]
         expected_response = "".join([
-            "event: message\ndata: queued\n\n",
-            "event: message\ndata: building\n\n"
-            "event: message\ndata: success\n\n"
+            "event: queued\ndata: {'status': 'OK'}\n\n",
+            "event: building\ndata: {'status': 'OK'}\n\n"
+            "event: success\ndata: {'status': 'OK'}\n\n"
         ])
         rv = self.app.get('/api/promote/staging-zone_one/my-app/0.0.8')
         self.assertTrue(rv.is_streamed)

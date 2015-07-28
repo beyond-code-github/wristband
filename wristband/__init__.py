@@ -118,23 +118,29 @@ class Promotions(Resource):
         if pipeline_position != 0:
             # We're not the first environment in the pipeline, check previous
             releases = get_all_releases()
-            app_version_in_environments = [r["env"] for r in releases if r["an"] == app_name and r["ver"] == app_version]
-            if pipeline[pipeline_position -1] not in app_version_in_environments:
-                return {"error": "you need to deploy {} to {} first".format(app_version, pipeline[pipeline_position -1])}, 400
+            app_version_in_environments = [r["env"] for r in releases if
+                                           r["an"] == app_name and r["ver"] == app_version]
+            if pipeline[pipeline_position - 1] not in app_version_in_environments:
+                return {"error": "you need to deploy {} to {} first".format(app_version,
+                                                                            pipeline[pipeline_position - 1])}, 400
 
         jenkins_uri = app.config['ENVIRONMENTS'][deploy_env]["jenkins_uri"]
         parsed_jenkins_uri = urlparse(jenkins_uri)
         # Very hacky
-        jenkins = Jenkins(jenkins_uri.replace("{}:{}@".format(parsed_jenkins_uri.username, parsed_jenkins_uri.password), ""), username=parsed_jenkins_uri.username, password=parsed_jenkins_uri.password)
+        jenkins = Jenkins(
+            jenkins_uri.replace("{}:{}@".format(parsed_jenkins_uri.username, parsed_jenkins_uri.password), ""),
+            username=parsed_jenkins_uri.username, password=parsed_jenkins_uri.password)
         dm = jenkins.get_job("deploy-microservice")
         params = {"APP": app_name, "APP_BUILD_NUMBER": app_version}
         running_job = dm.invoke(build_params=params, securitytoken=None)
+
         def gen():
-            yield sse("message", "queued")
+            yield sse("queued", {"status": "OK"})
             running_job.block_until_building()
-            yield sse("message", "building")
+            yield sse("building", {"status": "OK"})
             running_job.block_until_complete()
-            yield sse("message", "success" if running_job.get_build().is_good() else "failed")
+            yield sse("success" if running_job.get_build().is_good() else "failed", {"status": "OK"})
+
         return Response(gen(), content_type="text/event-stream")
 
 
