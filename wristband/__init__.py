@@ -1,11 +1,11 @@
-from flask import Flask, Response
-from flask_restful import Resource, Api
 import types
-import json
-import requests
-from jenkinsapi.jenkins import Jenkins
 from urlparse import urlparse
 import os
+
+from flask import Flask, Response
+from flask_restful import Resource, Api
+import requests
+from jenkinsapi.jenkins import Jenkins
 
 app = Flask(__name__)
 api = Api(app)
@@ -91,10 +91,8 @@ class APIConfig(Resource):
         releases_all_envs = get_all_releases()
         environments = get_all_environments()
         envgroups = make_environment_groups(environments)
-        config = {'pipelines': pipelines,
-                  'envs' : envgroups }
+        config = {'pipelines': pipelines, 'envs': envgroups, "apps": []}
 
-        config["apps"] = []
         for app in get_all_app_names(releases_all_envs):
             config['apps'].append({ 'name' : app, 'envs' : {} })
             for env in environments:
