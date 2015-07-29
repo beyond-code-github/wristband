@@ -24,6 +24,7 @@ class WristbandconfigTestCase(unittest.TestCase):
             'zone_two': ['qa-zone_one', 'staging-zone_two']
         }, wristband.config.production.PIPELINES)
 
+        import pdb; pdb.set_trace()
         self.assertEquals({
             'qa-zone_one': {'jenkins_uri': 'https://qa-zone_one'},
             'qa-zone_two': {'jenkins_uri': 'https://qa-zone_two'},

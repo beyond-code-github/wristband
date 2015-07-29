@@ -3,12 +3,12 @@
 import os
 import re
 
-from wristband.utils import Environment
+from utils import Environment
 
 _environments = [Environment.from_environment_name(env_name) for env_name in os.getenv("ENVIRONMENTS").split(",")]
 
 for env in _environments:
-    jenkins_uri = os.getenv("ENVIRONMENT_{env}_jenkins_uri".format(env=env).replace("-", "_"))
+    jenkins_uri = os.getenv("ENVIRONMENT_{env}_jenkins_uri".format(env=env.name).replace("-", "_"))
     if not re.match('https.*', jenkins_uri):
         print "WARNING: {} should be https".format(jenkins_uri)
     else:

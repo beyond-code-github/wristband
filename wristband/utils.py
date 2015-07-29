@@ -2,6 +2,7 @@ import re
 
 
 class Release(object):
+
     mapping_keys = {
         'an': 'app_name',
         'env': 'environment',
@@ -17,6 +18,13 @@ class Release(object):
         return cls
 
 class Environment(object):
+    """
+    Left and right may add more confusion, but the just refer to what's
+    before and after the -.
+    If there not left or right then the full environment name is used
+    Better names suggestion are welcome
+
+    """
     regex = r'^((?P<left>\w+)-(?P<right>\w+))$|^(?P<name>\w+)$'
 
     def __init__(self, name, left, right, jenkins_uri):

@@ -8,7 +8,7 @@ from flask_restful import Resource, Api
 import requests
 from jenkinsapi.jenkins import Jenkins
 
-from utils import Release
+from utils import Release, Environment
 
 app = Flask(__name__)
 api = Api(app)
@@ -53,7 +53,7 @@ def get_all_environments():
     pipeline_list = get_all_pipelines()
     environments = []
     for pipeline in pipeline_list:
-        environments.extend(get_envs_in_pipeline(pipeline))
+        environments.append(get_envs_in_pipeline(pipeline))
     return sorted(environments)
 
 
@@ -65,7 +65,7 @@ def get_envs_in_pipeline(pipeline):
     pipelines = get_all_pipelines()
     envs = None
     if pipelines:
-        envs = pipelines[pipeline]
+        envs = Environment.from_environment_name(pipelines[pipeline])
     return envs
 
 
@@ -95,6 +95,7 @@ class Ping(Resource):
 @api.route('/api/config')
 class APIConfig(Resource):
     def get(self):
+        import pdb; pdb.set_trace()
         pipelines = get_all_pipelines()
         releases_all_envs = get_all_releases()
         environments = get_all_environments()
@@ -117,6 +118,7 @@ class APIConfig(Resource):
 @api.route('/api/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotions(Resource):
     def get(self, deploy_env, app_name, app_version):
+        pdb; pdb.set_trace()
         # Hardcoded for speed !!!!
         pipeline = app.config.get('PIPELINES')[deploy_env.split("-")[1]]
         pipeline_position = pipeline.index(deploy_env)
