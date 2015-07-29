@@ -3,7 +3,8 @@ from mock import Mock
 
 import pytest
 
-from wristband.utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts
+from wristband.utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts, \
+    make_environment_groups
 
 
 @pytest.mark.parametrize(('dictionary', 'expected_result'), [
@@ -65,4 +66,5 @@ def test_get_all_releases(mock_response, expected_result):
 
 
 def test_make_environment_groups():
-    assert make_environment_groups() == {'qa': ['qa-one', 'qa-two'], 'staging': ['staging-one', 'staging-two']}
+    environments = ['qa-one', 'qa-two', 'staging-one', 'staging-two']
+    assert make_environment_groups(environments) == {'qa': ['qa-one', 'qa-two'], 'staging': ['staging-one', 'staging-two']}

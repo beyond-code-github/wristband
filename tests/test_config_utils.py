@@ -1,6 +1,6 @@
 import mock
 
-from wristband.config.utils import environments_factory, pipelines_factory
+from wristband.config_utils import environments_factory, pipelines_factory
 
 @mock.patch('wristband.config.utils.os.getenv')
 def test_environment_factory(mock_os_getenv):

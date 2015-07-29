@@ -1,5 +1,6 @@
 import re
 from collections import namedtuple
+from itertools import chain
 
 import requests
 
@@ -26,8 +27,8 @@ def humanise_release_dict(release_dict):
 
 def extract_environment_parts(environment_name):
     m = re.search(ENVIRONMENT_REGEX, environment_name)
-    env = m.group('env') or None
-    security_level = m.group('security_level') or None
+    env = m.group('env') if m else None
+    security_level = m.group('security_level') if m else None
 
     return EnvironmentsParts(full_name=environment_name,
                              env=env,
@@ -64,7 +65,7 @@ def get_all_pipelines():
 
 
 def get_all_environments():
-    return sorted(map(get_envs_in_pipeline, get_all_pipelines()))
+    return sorted(chain.from_iterable(map(get_envs_in_pipeline, get_all_pipelines())))
 
 
 def get_envs_in_pipeline(pipeline):
@@ -75,7 +76,6 @@ def get_envs_in_pipeline(pipeline):
 
 
 def make_environment_groups(environments):
-    import pdb; pdb.set_trace()
     shortenvs = frozenset([extract_environment_parts(environment).env for environment in environments])
     envgroups = {}
     for shortenv in shortenvs:

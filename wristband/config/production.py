@@ -1,6 +1,6 @@
 import os
 
-from .utils import pipelines_factory, environments_factory
+from config_utils import pipelines_factory, environments_factory
 
 
 PIPELINES = pipelines_factory()
