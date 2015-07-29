@@ -76,8 +76,8 @@ def make_environment_groups(environments):
 
 def sse(event, data):
     return "".join([
-        "event: {}\n".format(event),
-        "data: {}\n\n".format(str(data))
+        'event: {}\n'.format(event),
+        'data: {}\n\n'.format(str(data))
     ])
 
 
@@ -136,11 +136,11 @@ class Promotions(Resource):
         running_job = dm.invoke(build_params=params, securitytoken=None)
 
         def gen():
-            yield sse("queued", {"status": "OK"})
+            yield sse('queued', {'status': 'OK'})
             running_job.block_until_building()
-            yield sse("building", {"status": "OK"})
+            yield sse('building', {'status': 'OK'})
             running_job.block_until_complete()
-            yield sse("success" if running_job.get_build().is_good() else "failed", {"status": "OK"})
+            yield sse('success' if running_job.get_build().is_good() else 'failed', {'status': 'OK'})
 
         return Response(gen(), content_type="text/event-stream")
 
