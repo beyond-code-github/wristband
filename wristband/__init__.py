@@ -79,7 +79,6 @@ def make_environment_groups(environments):
 
 def sse(messages):
     """
-
     :param messages: Tuple of named tuples contaning key and data
     :return:
     """
@@ -118,7 +117,6 @@ class APIConfig(Resource):
 @api.route('/api/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotions(Resource):
     def get(self, deploy_env, app_name, app_version):
-        pdb; pdb.set_trace()
         # Hardcoded for speed !!!!
         pipeline = app.config.get('PIPELINES')[deploy_env.split("-")[1]]
         pipeline_position = pipeline.index(deploy_env)
@@ -143,13 +141,13 @@ class Promotions(Resource):
         running_job = dm.invoke(build_params=params, securitytoken=None)
 
         def gen():
-            yield sse((MessageTuple(key="message", value="queued"),
+            yield sse((MessageTuple(key="event", value="queued"),
                        MessageTuple(key="data", value={"status": "OK"})))
             running_job.block_until_building()
-            yield sse((MessageTuple(key="message", value="building"),
+            yield sse((MessageTuple(key="event", value="building"),
                        MessageTuple(key="data", value={"status": "OK"})))
             running_job.block_until_complete()
-            yield sse((MessageTuple(key="message", value="success" if running_job.get_build().is_good() else "failed"),
+            yield sse((MessageTuple(key="event", value="success" if running_job.get_build().is_good() else "failed"),
                        MessageTuple(key="data", value={"status": "OK"})))
 
         return Response(gen(), content_type="text/event-stream")

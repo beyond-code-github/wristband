@@ -1,6 +1,7 @@
 # wristband
 
 [![Apache-2.0 license](http://img.shields.io/badge/license-Apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/hmrc/wristband.svg)](https://travis-ci.org/hmrc/wristband) [ ![Download](https://api.bintray.com/packages/hmrc/releases/wristband/images/download.svg) ](https://bintray.com/hmrc/releases/wristband/_latestVersion)
+[![Coverage Status](https://coveralls.io/repos/hmrc/wristband/badge.svg?branch=master&service=github)](https://coveralls.io/github/hmrc/wristband?branch=master)
 
 ## What is this?
 
