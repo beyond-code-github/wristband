@@ -8,7 +8,7 @@ from flask_restful import Resource, Api
 import requests
 from jenkinsapi.jenkins import Jenkins
 
-from data_structures import Release
+from utils import Release
 
 app = Flask(__name__)
 api = Api(app)
@@ -62,11 +62,15 @@ def get_all_pipelines():
 
 
 def get_envs_in_pipeline(pipeline):
-    return app.config.get('PIPELINES')[pipeline]
+    pipelines = get_all_pipelines()
+    envs = None
+    if pipelines:
+        envs = pipelines[pipeline]
+    return envs
 
 
 def make_environment_groups(environments):
-    shortenvs = frozenset([short.split('-')[0] for short in environments])
+    shortenvs = frozenset([environment.left for environment in environments])
     envgroups = {}
     for shortenv in shortenvs:
         envgroups[shortenv] = [env for env in environments if shortenv in env]

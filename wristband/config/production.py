@@ -3,15 +3,16 @@
 import os
 import re
 
-__environment_list = os.getenv("ENVIRONMENTS").split(",")
-__environments = {}
+from wristband.utils import Environment
 
-for env in __environment_list:
-    environment_jenkins = os.getenv("ENVIRONMENT_{}_jenkins_uri".format(env).replace("-", "_"))
-    if not re.match('https.*', environment_jenkins):
-        print "WARNING: {} should be https".format(environment_jenkins)
+_environments = [Environment.from_environment_name(env_name) for env_name in os.getenv("ENVIRONMENTS").split(",")]
+
+for env in _environments:
+    jenkins_uri = os.getenv("ENVIRONMENT_{env}_jenkins_uri".format(env=env).replace("-", "_"))
+    if not re.match('https.*', jenkins_uri):
+        print "WARNING: {} should be https".format(jenkins_uri)
     else:
-        __environments[env] = {"jenkins_uri": os.getenv("ENVIRONMENT_{}_jenkins_uri".format(env).replace("-", "_"))}
+        env.jenkins_uri = jenkins_uri
 
 __pipelines_list = os.getenv("PIPELINES").split(",")
 __pipelines = {p: os.getenv("PIPELINE_{}".format(p).replace("-", "_")).split(",") for p in __pipelines_list}
@@ -20,4 +21,4 @@ __releases_uri = os.getenv("RELEASES_URI")
 
 PIPELINES = __pipelines
 RELEASES_URI = __releases_uri
-ENVIRONMENTS = __environments
+ENVIRONMENTS = _environments

@@ -1,7 +1,7 @@
 import re
 
-class Release(object):
 
+class Release(object):
     mapping_keys = {
         'an': 'app_name',
         'env': 'environment',
@@ -10,29 +10,26 @@ class Release(object):
         'ver': 'version'
     }
 
-
     @classmethod
     def from_dictionary(cls, dictionary):
         for key, value in dictionary.iteritems():
             setattr(cls, cls.mapping_keys.get(key, key), value)
         return cls
 
-
 class Environment(object):
-
     regex = r'^((?P<left>\w+)-(?P<right>\w+))$|^(?P<name>\w+)$'
 
-    def __init__(self, name, left, right):
+    def __init__(self, name, left, right, jenkins_uri):
         self.name = name
         self.left = left
         self.right = right
+        self.jenkins_uri = jenkins_uri
 
     @classmethod
-    def from_string(cls, env_name):
-        cls._parse_name(env_name)
+    def from_environment_name(cls, env_name):
+        m = re.search(cls.regex, env_name)
+        cls.right = m.group('right') or env_name
+        cls.left = m.group('left') or env_name
+        cls.name = env_name
+        cls.jenkins_uri = None
         return cls
-
-    def _parse_name(self, env_name):
-        m = re.search(self.regex, env_name)
-        self.right = m.group('right') or env_name
-        self.left = m.group('left') or env_name
