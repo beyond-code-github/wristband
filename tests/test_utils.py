@@ -1,52 +1,68 @@
-from wristband.utils import Release, Environment
+import mock
+from mock import Mock
 
-releases_test_data = [
+import pytest
+
+from wristband.utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts
+
+
+@pytest.mark.parametrize(('dictionary', 'expected_result'), [
     (
-        {
-            'an': 'test_name',
-            'env': 'test_environment',
-            'fs': 'test_first_seen',
-            'ls': 'test_last_seen',
-            'ver': 'test_version'
-        }
+            {
+                'an': 'test_name',
+                'env': 'test_environment',
+                'fs': 'test_first_seen',
+                'ls': 'test_last_seen',
+                'ver': 'test_version'
+            },
+            {
+                'app_name': 'test_name',
+                'environment': 'test_environment',
+                'first_seen': 'test_first_seen',
+                'last_seen': 'test_last_seen',
+                'version': 'test_version'
+            }
     ), (
-        {
-            'an': 'test_name',
-            'env': 'test_environment',
-            'fs': 'test_first_seen',
-            'ls': 'test_last_seen',
-            'ver': 'test_version',
-            'not_converted': 'test_not_converted'
-        }
+            {
+                'an': 'test_name',
+                'env': 'test_environment',
+                'fs': 'test_first_seen',
+                'ls': 'test_last_seen',
+                'ver': 'test_version',
+                'not_converted': 'test_not_converted'
+            },
+            {
+                'app_name': 'test_name',
+                'environment': 'test_environment',
+                'first_seen': 'test_first_seen',
+                'last_seen': 'test_last_seen',
+                'version': 'test_version'
+            }
     )
-]
-
-def test_release_creation_from_dictionary():
-    def check_creation(dictionary):
-        release_under_test = Release.from_dictionary(dictionary)
-        for key in dictionary:
-            try:
-                class_attribute = release_under_test.mapping_keys[key]
-            except KeyError:
-                class_attribute = key
-            assert getattr(release_under_test, class_attribute) == dictionary[key]
-
-    for dictionary in releases_test_data:
-        yield check_creation, dictionary
+])
+def test_humanise_release_dict(dictionary, expected_result):
+    assert humanise_release_dict(dictionary) == expected_result
 
 
-environments_test_data = [
-    ('qa-left', 'qa-left', 'qa', 'left'),
-    ('dev', 'dev', 'dev', 'dev')
-]
+@pytest.mark.parametrize(('env_name', 'expected_result'), [
+    ('qa-left', EnvironmentsParts(full_name='qa-left', env='qa', security_level='left')),
+    ('dev', EnvironmentsParts(full_name='dev', env=None, security_level=None))
+])
+def test_extract_environments_parts(env_name, expected_result):
+    assert extract_environment_parts(env_name) == expected_result
 
-def test_environment_creation_from_environment_name():
-    def check_creation(env_name, expected_name, expected_left, expected_right):
-        environment_under_test = Environment.from_environment_name(env_name)
-        assert environment_under_test.name == expected_name
-        assert environment_under_test.left == expected_left
-        assert environment_under_test.right == expected_right
-        assert environment_under_test.jenkins_uri == None
 
-    for env_name, expected_name, expected_left, expected_right in environments_test_data:
-        yield check_creation, env_name, expected_name, expected_left, expected_right
+@pytest.mark.parametrize(('mock_response', 'expected_result'), [
+    (False, []),
+    (Mock(), [{'app_name': 'test'}])
+])
+def test_get_all_releases(mock_response, expected_result):
+    with mock.patch('wristband.utils.requests.get') as mock_get:
+        if mock_response:
+            mock_response.json.return_value = [{'an': 'test'}]
+        mock_get.return_value = mock_response
+        assert get_all_releases() == expected_result
+
+
+def test_make_environment_groups():
+    assert make_environment_groups() == {'qa': ['qa-one', 'qa-two'], 'staging': ['staging-one', 'staging-two']}

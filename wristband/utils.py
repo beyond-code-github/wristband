@@ -1,43 +1,91 @@
 import re
+from collections import namedtuple
+
+import requests
+
+MAPPING_KEYS = {
+    'an': 'app_name',
+    'env': 'environment',
+    'fs': 'first_seen',
+    'ls': 'last_seen',
+    'ver': 'version'
+}
+ENVIRONMENT_REGEX = r'^((?P<env>\w+)-(?P<security_level>\w+))$'
+RELEASES_APP_ENDPOINT = "https://releases.tax.service.gov.uk/{endpoint}"
+
+EnvironmentsParts = namedtuple('EnvironmentParts', ['full_name', 'env', 'security_level'])
 
 
-class Release(object):
+def humanise_release_dict(release_dict):
+    new_dict = {}
+    for k, v in release_dict.iteritems():
+        if k in MAPPING_KEYS:
+            new_dict[MAPPING_KEYS[k]] = v
+    return new_dict
 
-    mapping_keys = {
-        'an': 'app_name',
-        'env': 'environment',
-        'fs': 'first_seen',
-        'ls': 'last_seen',
-        'ver': 'version'
-    }
 
-    @classmethod
-    def from_dictionary(cls, dictionary):
-        for key, value in dictionary.iteritems():
-            setattr(cls, cls.mapping_keys.get(key, key), value)
-        return cls
+def extract_environment_parts(environment_name):
+    m = re.search(ENVIRONMENT_REGEX, environment_name)
+    env = m.group('env') or None
+    security_level = m.group('security_level') or None
 
-class Environment(object):
+    return EnvironmentsParts(full_name=environment_name,
+                             env=env,
+                             security_level=security_level)
+
+
+def get_all_releases():
+    url = RELEASES_APP_ENDPOINT.format(endpoint='apps')
+    response = requests.get(url)
+    if response:
+        releases = [humanise_release_dict(release) for release in response.json()]
+    else:
+        releases = []
+    return releases
+
+
+def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
+    releases_for_env = filter(lambda r: r['environment'] == deploy_env and r['app_name'] == app_name, releases)
+    return sorted(releases_for_env, key=lambda r: r['last_seen'], reverse=True)
+
+
+def get_all_app_names(releases):
+    return frozenset([release['app_name'] for release in releases])
+
+
+def get_all_app_names_in_env(env, releases):
+    return frozenset(filter(lambda r: r['environment'] == env, releases))
+
+
+def get_all_pipelines():
+    # circular import, should probably fix this properly
+    from app import app
+    return app.config.get('PIPELINES')
+
+
+def get_all_environments():
+    return sorted(map(get_envs_in_pipeline, get_all_pipelines()))
+
+
+def get_envs_in_pipeline(pipeline):
+    try:
+        return get_all_pipelines()[pipeline]
+    except KeyError:
+        return []
+
+
+def make_environment_groups(environments):
+    import pdb; pdb.set_trace()
+    shortenvs = frozenset([extract_environment_parts(environment).env for environment in environments])
+    envgroups = {}
+    for shortenv in shortenvs:
+        envgroups[shortenv] = [env for env in environments if shortenv in env]
+    return envgroups
+
+
+def sse(messages):
     """
-    Left and right may add more confusion, but the just refer to what's
-    before and after the -.
-    If there not left or right then the full environment name is used
-    Better names suggestion are welcome
-
+    :param messages: Tuple of named tuples contaning key and data
+    :return:
     """
-    regex = r'^((?P<left>\w+)-(?P<right>\w+))$|^(?P<name>\w+)$'
-
-    def __init__(self, name, left, right, jenkins_uri):
-        self.name = name
-        self.left = left
-        self.right = right
-        self.jenkins_uri = jenkins_uri
-
-    @classmethod
-    def from_environment_name(cls, env_name):
-        m = re.search(cls.regex, env_name)
-        cls.right = m.group('right') or env_name
-        cls.left = m.group('left') or env_name
-        cls.name = env_name
-        cls.jenkins_uri = None
-        return cls
+    return "".join(["{key}: {value}".format(message.key, str(message.value)) for message in messages])
