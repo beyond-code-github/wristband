@@ -1,16 +1,3 @@
-import json
-
-import mock
-
-import app
-
-
-def test_api_config_from_app_config(self):
-    expected_config = json.loads(app.app.config.get('ENVIRONMENTS'))
-    rv = self.app.get('/api/config')
-    APIConfig(Mock()).get()
-    self.assertEqual(expected_config, json.loads(rv.data))
-
 @mock.patch('requests.get')
 def test_get_env_versions_bad_app_raises_404(self, all_releases_mock):
     all_releases_mock().json = mock.MagicMock(return_value=[
@@ -26,22 +13,7 @@ def test_get_env_versions_bad_app_raises_404(self, all_releases_mock):
     rv = self.app.get('/api/versions/QA/bad')
     self.assertEqual(404, rv.status_code)
 
-def test_get_all_releases_of_app_in_env(self):
-    """test_get_all_releases_of_app_in_env"""
-    deploy_env = "qa-zone_two"
-    app_name = "test-app"
-    expected_data = [
-        {
-            "ls": 9,
-            "ver": "0.0.8"
-        },
-        {
-            "ls": 8,
-            "ver": "0.0.2"
-        },
-    ]
-    self.assertEqual(expected_data,
-                     app.get_all_releases_of_app_in_env(deploy_env, app_name, app.releases))
+
 
 
 

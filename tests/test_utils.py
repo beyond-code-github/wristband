@@ -67,4 +67,5 @@ def test_get_all_releases(mock_response, expected_result):
 
 def test_make_environment_groups():
     environments = ['qa-one', 'qa-two', 'staging-one', 'staging-two']
-    assert make_environment_groups(environments) == {'qa': ['qa-one', 'qa-two'], 'staging': ['staging-one', 'staging-two']}
+    assert make_environment_groups(environments) == {'qa': ['qa-one', 'qa-two'],
+                                                     'staging': ['staging-one', 'staging-two']}
