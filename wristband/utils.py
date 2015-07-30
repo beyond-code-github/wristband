@@ -1,9 +1,7 @@
 import re
 from collections import namedtuple
 from itertools import chain
-from urlparse import urlparse
 
-from jenkinsapi.jenkins import Jenkins
 import requests
 
 MAPPING_KEYS = {
@@ -90,13 +88,11 @@ def sse(messages):
     :param messages: Tuple of named tuples contaning key and data
     :return:
     """
-    return "".join(["{key}: {value}".format(message.key, str(message.value)) for message in messages])
+    return "".join(["{key}: {value}".format(key=message.key, value=str(message.value)) for message in messages])
 
 
 def get_jenkins_uri(environments, deploy_env_name):
-    print environments
     try:
         return environments[deploy_env_name]["jenkins_uri"]
     except KeyError:
         return None
-

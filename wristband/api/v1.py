@@ -40,25 +40,27 @@ class Config(Resource):
         else:
             return {}, 404
 
+
 @api_v1.resource('/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotion(Resource):
     def get(self, deploy_env, app_name, app_version):
         # Hardcoded for speed !!!!
         deploy_env = extract_environment_parts(deploy_env)
         pipeline = current_app.config.get('PIPELINES')[deploy_env.security_level]
-        pipeline_position = pipeline.index(deploy_env.full_name)
+        environment_position = pipeline.index(deploy_env.full_name)
+        previous_environment_index = environment_position - 1
 
-        if pipeline_position != 0:
+        if environment_position != 0:
             # We're not the first environment in the pipeline, check previous
             releases = get_all_releases()
-            app_version_in_environments = filter(lambda r: r['app_name'] == app_name and r['version'] == app_version, releases)
-            if pipeline[pipeline_position - 1] not in app_version_in_environments:
-                return {"error": "you need to deploy {} to {} first".format(app_version,
-                                                                            pipeline[pipeline_position - 1])}, 400
-
+            environments_with_same_app_version = map(lambda r: r['environment'],
+                                                     filter(lambda r: r['app_name'] == app_name and r['version'] == app_version,
+                                                            releases))
+            previous_environment = pipeline[previous_environment_index]
+            if previous_environment not in environments_with_same_app_version:
+                return {"error": "you need to deploy {} to {} first".format(app_version, previous_environment)}, 400
 
         jenkins_uri = get_jenkins_uri(current_app.config['ENVIRONMENTS'], deploy_env.full_name)
-
         if jenkins_uri:
             parsed_jenkins_uri = urlparse(jenkins_uri)
             jenkins = Jenkins(
