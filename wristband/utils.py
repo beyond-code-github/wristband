@@ -45,10 +45,15 @@ def get_all_releases():
     return releases
 
 
+def remove_unwanted_keys_from_dict(dictionary, allowed_keys=None):
+    allowed_keys = allowed_keys or ('version', 'last_seen')
+    return {key: dictionary[key] for key in dictionary if key in allowed_keys}
+
+
 def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
     releases_for_env = filter(lambda r: r['environment'] == deploy_env and r['app_name'] == app_name, releases)
-    return sorted(releases_for_env, key=lambda r: r['last_seen'], reverse=True)
-
+    sorted_releases_for_env = sorted(releases_for_env, key=lambda r: r['last_seen'], reverse=True)
+    return map(remove_unwanted_keys_from_dict, sorted_releases_for_env)
 
 def get_all_app_names(releases):
     return frozenset([release['app_name'] for release in releases])

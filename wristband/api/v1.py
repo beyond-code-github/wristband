@@ -25,18 +25,17 @@ class Config(Resource):
         all_releases = get_all_releases()
         environments = get_all_environments()
         envgroups = make_environment_groups(environments)
-        config = {'pipelines': pipelines, 'envs': envgroups, "apps": []}
+        response = {'pipelines': pipelines, 'envs': envgroups, "apps": []}
 
         # change this into the releases app
         for app in get_all_app_names(all_releases):
-            config['apps'].append({'name': app, 'envs': {}})
+            response['apps'].append({'name': app, 'envs': {}})
             for env in environments:
                 versions = get_all_releases_of_app_in_env(env, app, all_releases)
                 if versions:
-                    config['apps'][-1]['envs'][env] = {'versions': versions}
-
-        if config:
-            return config
+                    response['apps'][-1]['envs'][env] = {'versions': versions}
+        if response:
+            return response
         else:
             return {}, 404
 
@@ -46,13 +45,14 @@ class Promotion(Resource):
     def get(self, deploy_env, app_name, app_version):
         # Hardcoded for speed !!!!
         deploy_env = extract_environment_parts(deploy_env)
-        pipeline = current_app.config.get('PIPELINES')[deploy_env.security_level]
-        environment_position = pipeline.index(deploy_env.full_name)
-        previous_environment_index = environment_position - 1
+        pipeline = get_all_pipelines()[deploy_env.security_level]
+        environment_index = pipeline.index(deploy_env.full_name)
+        previous_environment_index = environment_index - 1
 
-        if environment_position != 0:
+        if environment_index != 0:
             # We're not the first environment in the pipeline, check previous
             releases = get_all_releases()
+            # this should come from the releases app
             environments_with_same_app_version = map(lambda r: r['environment'],
                                                      filter(lambda r: r['app_name'] == app_name and r['version'] == app_version,
                                                             releases))
