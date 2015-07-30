@@ -1,8 +1,8 @@
 import mock
 
-from wristband.config_utils import environments_factory, pipelines_factory
+from config_utils import environments_factory, pipelines_factory
 
-@mock.patch('wristband.config.utils.os.getenv')
+@mock.patch('config_utils.os.getenv')
 def test_environment_factory(mock_os_getenv):
     mock_os_getenv.side_effect = lambda environment: {
         "ENVIRONMENTS": "qa-zone_one,qa-zone_two,staging-zone_one,staging-zone_two",
@@ -20,7 +20,7 @@ def test_environment_factory(mock_os_getenv):
     }
 
 
-@mock.patch('wristband.config.utils.os.getenv')
+@mock.patch('config_utils.os.getenv')
 def test_pipelines_factory(mock_os_getenv):
     mock_os_getenv.side_effect = lambda environment: {
         "PIPELINES": "zone_one,zone_two",

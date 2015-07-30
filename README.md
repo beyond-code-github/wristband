@@ -27,13 +27,12 @@ pip install -r requirements-tests.txt
 
 - Python >= 2.7
 - `requirements.txt`
-- MongoDB >= 2.6
 
 ## API
 
 | Path | Supported Methods | Description |
 | ---- | ----------------- | ----------- |
-| `/ping/ping` | GET | Healthcheck |
+| `/ping` | GET | Healthcheck |
 
 ## Running wristband
 
@@ -60,4 +59,4 @@ python wristband/__init__.py
 
 TODO
 --
-* Validate envronment options
+* Validate environment options

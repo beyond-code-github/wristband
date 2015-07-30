@@ -1,10 +1,9 @@
 import mock
 from mock import Mock
-
 import pytest
 
-from wristband.utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts, \
-    make_environment_groups
+from utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts, \
+    make_environment_groups, get_jenkins_uri
 
 
 @pytest.mark.parametrize(('dictionary', 'expected_result'), [
@@ -69,3 +68,27 @@ def test_make_environment_groups():
     environments = ['qa-one', 'qa-two', 'staging-one', 'staging-two']
     assert make_environment_groups(environments) == {'qa': ['qa-one', 'qa-two'],
                                                      'staging': ['staging-one', 'staging-two']}
+
+
+@pytest.mark.parametrize(('environments', 'deploy_env_name', 'expected_uri'), [
+    (
+        {
+            'staging-left': { 'jenkins_uri': 'https://user:password@url.com'},
+            'qa-right': {'jenkins_uri': 'https://user:password@url.com'},
+            'staging-right': {'jenkins_uri': 'https://user:password@url.com'}
+         },
+        'not_existing_env',
+        None
+    ),
+    (
+        {
+            'staging-left': { 'jenkins_uri': 'https://user:password@url.com'},
+            'qa-right': {'jenkins_uri': 'https://user:password@url.com'},
+            'staging-right': {'jenkins_uri': 'https://user:password@url.com'}
+         },
+        'qa-right',
+        'https://user:password@url.com'
+    )
+])
+def test_get_jenkins_uri(environments, deploy_env_name, expected_uri):
+   assert get_jenkins_uri(environments, deploy_env_name) == expected_uri

@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 
 from api.v1 import api_v1_bp, API_VERSION_V1
 
@@ -16,6 +16,10 @@ def create_app():
     return app
 
 app = create_app()
+
+@app.route('/ping')
+def ping():
+    return jsonify({'status': 'OK'})
 
 if __name__ == '__main__':
     app.run(debug=True, port=int(os.getenv("PORT", "5000")))
