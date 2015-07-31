@@ -1,3 +1,4 @@
+import json
 import re
 from collections import namedtuple
 from itertools import chain
@@ -87,8 +88,8 @@ def make_environment_groups(environments):
 
 def sse(event, data):
     return "".join([
-        'event: {}\n'.format(event),
-        'data: {}\n\n'.format(str(data))
+        "event: {}\n".format(event),
+        "data: {}\n\n".format(json.dumps(data))
     ])
 
 

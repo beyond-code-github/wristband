@@ -84,9 +84,9 @@ def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_moc
     get_jenkins_uri_mock.return_value = JENKINS_URL
 
     expected_response = "".join([
-        "event: queued\ndata: {'status': 'OK'}\n\n",
-        "event: building\ndata: {'status': 'OK'}\n\n"
-        "event: success\ndata: {'status': 'OK'}\n\n"
+        'event: queued\ndata: {"status": "OK"}\n\n',
+        'event: building\ndata: {"status": "OK"}\n\n',
+        'event: success\ndata: {"status": "OK"}\n\n'
     ])
 
     url = url_for('api_v1.promotion', deploy_env='staging-zone_one', app_name='my-app', app_version='0.0.8')
