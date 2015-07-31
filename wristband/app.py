@@ -18,7 +18,7 @@ def create_app(conf_file=None):
 
 app = create_app()
 
-@app.route('/ping')
+@app.route('/ping/ping')
 def ping():
     return jsonify({'status': 'OK'})
 

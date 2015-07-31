@@ -32,7 +32,7 @@ pip install -r requirements-tests.txt
 
 | Path | Supported Methods | Description |
 | ---- | ----------------- | ----------- |
-| `/ping` | GET | Healthcheck |
+| `/ping/ping` | GET | Healthcheck |
 
 ## Running wristband
 
