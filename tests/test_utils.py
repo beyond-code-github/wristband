@@ -72,23 +72,23 @@ def test_make_environment_groups():
 
 @pytest.mark.parametrize(('environments', 'deploy_env_name', 'expected_uri'), [
     (
-        {
-            'staging-left': { 'jenkins_uri': 'https://user:password@url.com'},
-            'qa-right': {'jenkins_uri': 'https://user:password@url.com'},
-            'staging-right': {'jenkins_uri': 'https://user:password@url.com'}
-         },
-        'not_existing_env',
-        None
+            {
+                'staging-left': {'jenkins_uri': 'https://user:password@url.com'},
+                'qa-right': {'jenkins_uri': 'https://user:password@url.com'},
+                'staging-right': {'jenkins_uri': 'https://user:password@url.com'}
+            },
+            'not_existing_env',
+            None
     ),
     (
-        {
-            'staging-left': { 'jenkins_uri': 'https://user:password@url.com'},
-            'qa-right': {'jenkins_uri': 'https://user:password@url.com'},
-            'staging-right': {'jenkins_uri': 'https://user:password@url.com'}
-         },
-        'qa-right',
-        'https://user:password@url.com'
+            {
+                'staging-left': {'jenkins_uri': 'https://user:password@url.com'},
+                'qa-right': {'jenkins_uri': 'https://user:password@url.com'},
+                'staging-right': {'jenkins_uri': 'https://user:password@url.com'}
+            },
+            'qa-right',
+            'https://user:password@url.com'
     )
 ])
 def test_get_jenkins_uri(environments, deploy_env_name, expected_uri):
-   assert get_jenkins_uri(environments, deploy_env_name) == expected_uri
+    assert get_jenkins_uri(environments, deploy_env_name) == expected_uri

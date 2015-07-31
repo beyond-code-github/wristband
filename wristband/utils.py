@@ -62,10 +62,6 @@ def get_all_app_names(releases):
     return frozenset([release['app_name'] for release in releases])
 
 
-def get_all_app_names_in_env(env, releases):
-    return frozenset(filter(lambda r: r['environment'] == env, releases))
-
-
 def get_all_pipelines():
     return current_app.config.get('PIPELINES')
 

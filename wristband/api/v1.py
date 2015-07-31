@@ -34,10 +34,7 @@ class Config(Resource):
                 versions = get_all_releases_of_app_in_env(env, app, all_releases)
                 if versions:
                     response['apps'][-1]['envs'][env] = {'versions': versions}
-        if response:
-            return response
-        else:
-            return {}, 404
+        return response
 
 
 @api_v1.resource('/promote/<deploy_env>/<app_name>/<app_version>')
