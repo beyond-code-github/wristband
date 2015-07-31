@@ -43,7 +43,6 @@ class Config(Resource):
 @api_v1.resource('/promote/<deploy_env>/<app_name>/<app_version>')
 class Promotion(Resource):
     def get(self, deploy_env, app_name, app_version):
-        # Hardcoded for speed !!!!
         deploy_env = extract_environment_parts(deploy_env)
         pipeline = get_all_pipelines()[deploy_env.security_level]
         environment_index = pipeline.index(deploy_env.full_name)
@@ -75,15 +74,11 @@ class Promotion(Resource):
             running_job = dm.invoke(build_params=params, securitytoken=None)
 
             def gen():
-                yield sse((MessageTuple(key="event", value="queued"),
-                           MessageTuple(key="data", value={"status": "OK"})))
+                yield sse('queued', {'status': 'OK'})
                 running_job.block_until_building()
-                yield sse((MessageTuple(key="event", value="building"),
-                           MessageTuple(key="data", value={"status": "OK"})))
+                yield sse('building', {'status': 'OK'})
                 running_job.block_until_complete()
-                yield sse(
-                    (MessageTuple(key="event", value="success" if running_job.get_build().is_good() else "failed"),
-                     MessageTuple(key="data", value={"status": "OK"})))
+                yield sse('success' if running_job.get_build().is_good() else 'failed', {'status': 'OK'})
 
             return Response(gen(), content_type="text/event-stream")
         else:

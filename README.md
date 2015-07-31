@@ -25,7 +25,7 @@ pip install -r requirements-tests.txt
 
 ## Requirements
 
-- Python >= 2.7
+- Python 2.7
 - `requirements.txt`
 
 ## API
@@ -45,7 +45,7 @@ ENVIRONMENT_staging_two_jenkins_uri=https://deploy-staging-two.tax.service.gov.u
 PIPELINE_one=qa-one,staging-one \
 PIPELINE_two=qa-two,staging-two
 CONFIG_FILE=config/production.py
-python wristband/__init__.py
+python wristband/app.py
 
 ## Contributing
 

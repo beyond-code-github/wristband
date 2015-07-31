@@ -2,6 +2,7 @@ import re
 from collections import namedtuple
 from itertools import chain
 
+from flask import current_app
 import requests
 
 MAPPING_KEYS = {
@@ -51,6 +52,7 @@ def remove_unwanted_keys_from_dict(dictionary, allowed_keys=None):
 
 
 def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
+    # This feels a bit nasty and convoluted, it should come from the releases app
     releases_for_env = filter(lambda r: r['environment'] == deploy_env and r['app_name'] == app_name, releases)
     sorted_releases_for_env = sorted(releases_for_env, key=lambda r: r['last_seen'], reverse=True)
     return map(remove_unwanted_keys_from_dict, sorted_releases_for_env)
@@ -64,9 +66,7 @@ def get_all_app_names_in_env(env, releases):
 
 
 def get_all_pipelines():
-    # circular import, should probably fix this properly
-    from app import app
-    return app.config.get('PIPELINES')
+    return current_app.config.get('PIPELINES')
 
 
 def get_all_environments():
@@ -88,12 +88,11 @@ def make_environment_groups(environments):
     return envgroups
 
 
-def sse(messages):
-    """
-    :param messages: Tuple of named tuples contaning key and data
-    :return:
-    """
-    return "".join(["{key}: {value}".format(key=message.key, value=str(message.value)) for message in messages])
+def sse(event, data):
+    return "".join([
+        'event: {}\n'.format(event),
+        'data: {}\n\n'.format(str(data))
+    ])
 
 
 def get_jenkins_uri(environments, deploy_env_name):
