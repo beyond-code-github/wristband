@@ -53,7 +53,8 @@ class Promotion(Resource):
             releases = get_all_releases()
             # this should come from the releases app
             environments_with_same_app_version = map(lambda r: r['environment'],
-                                                     filter(lambda r: r['app_name'] == app_name and r['version'] == app_version,
+                                                     filter(lambda r: r['app_name'] == app_name and r[
+                                                                                                        'version'] == app_version,
                                                             releases))
             previous_environment = pipeline[previous_environment_index]
             if previous_environment not in environments_with_same_app_version:

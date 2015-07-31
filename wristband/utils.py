@@ -57,6 +57,7 @@ def get_all_releases_of_app_in_env(deploy_env, app_name, releases):
     sorted_releases_for_env = sorted(releases_for_env, key=lambda r: r['last_seen'], reverse=True)
     return map(remove_unwanted_keys_from_dict, sorted_releases_for_env)
 
+
 def get_all_app_names(releases):
     return frozenset([release['app_name'] for release in releases])
 

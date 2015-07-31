@@ -1,7 +1,6 @@
 -r requirements.txt
 pytest==2.7.2
 pytest-cov==2.0.0
-pytest-pep8==1.0.6
 pytest-flask==0.8.1
 pytest-pythonpath==0.7
 python-coveralls==2.5.0
