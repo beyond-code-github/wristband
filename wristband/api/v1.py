@@ -2,12 +2,13 @@ from collections import namedtuple
 from urlparse import urlparse
 
 from flask import Blueprint, Response, current_app
-from flask_restful import Resource, Api
+from flask_restful import Api
 from jenkinsapi.jenkins import Jenkins
 
 from utils import get_all_releases, get_all_app_names, get_all_releases_of_app_in_env, \
     get_all_pipelines, get_all_environments, make_environment_groups, sse, extract_environment_parts, \
     get_jenkins_uri
+from auth import AuthenticatedResource
 
 MessageTuple = namedtuple('MessageTuple', ['key', 'value'])
 
@@ -19,7 +20,7 @@ api_v1 = Api(api_v1_bp)
 
 
 @api_v1.resource('/config')
-class Config(Resource):
+class Config(AuthenticatedResource):
     def get(self):
         pipelines = get_all_pipelines()
         all_releases = get_all_releases()
@@ -38,7 +39,7 @@ class Config(Resource):
 
 
 @api_v1.resource('/promote/<deploy_env>/<app_name>/<app_version>')
-class Promotion(Resource):
+class Promotion(AuthenticatedResource):
     def get(self, deploy_env, app_name, app_version):
         deploy_env = extract_environment_parts(deploy_env)
         pipeline = get_all_pipelines()[deploy_env.security_level]
@@ -50,8 +51,7 @@ class Promotion(Resource):
             releases = get_all_releases()
             # this should come from the releases app
             environments_with_same_app_version = map(lambda r: r['environment'],
-                                                     filter(lambda r: r['app_name'] == app_name and r[
-                                                                                                        'version'] == app_version,
+                                                     filter(lambda r: r['app_name'] == app_name and r['version'] == app_version,
                                                             releases))
             previous_environment = pipeline[previous_environment_index]
             if previous_environment not in environments_with_same_app_version:
