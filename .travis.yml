@@ -7,7 +7,7 @@ install:
     - "pip install -r requirements-tests.txt"
 
 script:
-    - nosetests -xv --with-coverage --cover-package=wristband
+    - py.test -v --cov wristband --cov-report term-missing
 
 after_success:
-    - coveralls -c .coveragerc
+    - coveralls

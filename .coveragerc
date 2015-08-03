@@ -2,7 +2,12 @@
 source = wristband
 parallel = True
 branch = True
-omit = wristband/config/development.py
+omit = wristband/config/*.py
+       wristband/__init__.py
+       wristband/api/__init__.py
+
+
+
 
 [report]
 precision = 2
@@ -16,3 +21,6 @@ exclude_lines =
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError
     raise NotImplementedError
+
+    # Don't complain if tests don't check for main file call
+    if __name__ == .__main__.:
