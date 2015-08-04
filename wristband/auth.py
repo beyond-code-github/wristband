@@ -6,15 +6,18 @@ import ldap
 
 
 def ldap_authentication(username, password):
-    ldap_conf = current_app['LDAP']
+    authenticated = False
+    ldap_conf = current_app.config['LDAP']
     user_dn = ldap_conf['user_dn'].format(username=username)
-    ldap_client = ldap.initialize(ldap['url'])
+    ldap_client = ldap.initialize(ldap_conf['url'])
     try:
         ldap_client.simple_bind_s(user_dn, password)
-        return True
+        authenticated = True
     except ldap.INVALID_CREDENTIALS:
+        pass
+    finally:
         ldap_client.unbind()
-        return False
+        return authenticated
 
 
 def authenticate(func):
@@ -24,9 +27,12 @@ def authenticate(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not getattr(func, 'authenticated', True):
+        if current_app.testing:
+            # skip authentication for testing purposes
             return func(*args, **kwargs)
-
+        # not in testing mode, check auth
+        if not getattr(func, 'authenticate', True):
+            return func(*args, **kwargs)
         if session.get('authenticated', False):
             return func(*args, **kwargs)
         abort(401)

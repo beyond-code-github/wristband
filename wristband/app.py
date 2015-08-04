@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify, Blueprint, session, request, Response
+from flask import Flask, jsonify, Blueprint, session, request
 
 from api.v1 import api_v1_bp, API_VERSION_V1
 from auth import ldap_authentication
@@ -10,7 +10,7 @@ main_app = Blueprint('main_app', __name__)
 
 @main_app.route('/ping/ping')
 def ping():
-    return Response(jsonify({'status': 'OK'}))
+    return jsonify({'status': 'OK'})
 
 
 @main_app.route('/login', methods=['POST'])
@@ -23,9 +23,9 @@ def login():
     user = ldap_authentication(username, password)
     if user:
         session['authenticated'] = True
-        return Response(jsonify({'status': 'OK'}))
+        return jsonify({'status': 'Authorised'})
     else:
-        return Response('Unauthorised', 401)
+        return jsonify({'status': 'Unauthorised'}), 401
 
 
 @main_app.route('/logout', methods=['GET'])
@@ -35,8 +35,7 @@ def logout():
     except KeyError:
         # not authenticated, do nothing
         pass
-    return Response(jsonify({'status': 'OK'}))
-
+    return jsonify({'status': 'OK'})
 
 
 def create_app(conf_file=None):
@@ -50,10 +49,12 @@ def create_app(conf_file=None):
         api_v1_bp,
         url_prefix='/api/v{version}'.format(version=API_VERSION_V1)
     )
+    # make sure we don't accidentally enable any of the testing features
+    app.testing = False
     return app
 
-app = create_app()
 
+app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True, port=int(os.getenv("PORT", "5000")))

@@ -20,9 +20,10 @@ def pipelines_factory():
 
 def ldap_config_factory():
     base_dn = os.getenv('LDAP_BASE_DN')
+    ldap_url = os.getenv('LDAP_URL')
     ldap_config = {
-        'url': os.getenv('LDAP_URL'),
-        'user_dn': 'uid={username},'+base_dn,
-        'base_dn': os.getenv('LDAP_BASE_DN')
+        'url': ldap_url,
+        'user_dn': 'uid={username},' + base_dn,
+        'base_dn': base_dn
     }
     return ldap_config
