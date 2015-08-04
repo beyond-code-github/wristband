@@ -16,3 +16,13 @@ def environments_factory():
 def pipelines_factory():
     return {pipeline: os.getenv("PIPELINE_{pipeline}".format(pipeline=pipeline).replace("-", "_")).split(",") for
             pipeline in os.getenv("PIPELINES").split(",")}
+
+
+def ldap_config_factory():
+    base_dn = os.getenv('LDAP_BASE_DN')
+    ldap_config = {
+        'url': os.getenv('LDAP_URL'),
+        'user_dn': 'uid={username},'+base_dn,
+        'base_dn': os.getenv('LDAP_BASE_DN')
+    }
+    return ldap_config

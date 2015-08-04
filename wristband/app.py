@@ -13,8 +13,11 @@ def ping():
     return Response(jsonify({'status': 'OK'}))
 
 
-@main_app('/login', methods=('POST', ))
+@main_app.route('/login', methods=['POST'])
 def login():
+    """
+    Ty to authenticate against LDAP, if successful drop a cookie to remember the user session
+    """
     username = request.form['username']
     password = request.form['password']
     user = ldap_authentication(username, password)
@@ -22,7 +25,18 @@ def login():
         session['authenticated'] = True
         return Response(jsonify({'status': 'OK'}))
     else:
-        return Response('Error', 401)
+        return Response('Unauthorised', 401)
+
+
+@main_app.route('/logout', methods=['GET'])
+def logout():
+    try:
+        del session['authenticated']
+    except KeyError:
+        # not authenticated, do nothing
+        pass
+    return Response(jsonify({'status': 'OK'}))
+
 
 
 def create_app(conf_file=None):
