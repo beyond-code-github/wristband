@@ -47,6 +47,7 @@ PIPELINE_two=qa-two,staging-two \
 LDAP_URL=ldap://ldap_url.com \
 LDAP_BASE_DN=dc=example,dc=com \
 CONFIG_FILE=config/production.py \
+SECRET_KEY=your_secret_key \
 python wristband/app.py
 
 ## Contributing

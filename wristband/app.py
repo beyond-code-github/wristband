@@ -41,8 +41,8 @@ def logout():
 def create_app(conf_file=None):
     conf_file = conf_file or 'config/production.py'
     app = Flask(__name__)
-    app.secret_key = 'not_so_secret_key'
-    app.config.from_envvar("CONFIG_FILE", conf_file)
+    app.secret_key = os.getenv('SECRET_KEY', 'not_so_secret_key')
+    app.config.from_envvar('CONFIG_FILE', conf_file)
     # blueprint registration
     app.register_blueprint(main_app)
     app.register_blueprint(
@@ -57,4 +57,4 @@ def create_app(conf_file=None):
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.getenv("PORT", "5000")))
+    app.run(debug=True, port=int(os.getenv('PORT', '5000')))
