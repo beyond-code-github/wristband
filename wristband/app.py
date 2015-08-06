@@ -23,6 +23,7 @@ def login():
     user = ldap_authentication(username, password)
     if user:
         session['authenticated'] = True
+        session['username'] = username
         return jsonify({'status': 'Authorised'})
     else:
         return jsonify({'status': 'Unauthorised'}), 401
@@ -32,6 +33,7 @@ def login():
 def logout():
     try:
         del session['authenticated']
+        del session['username']
     except KeyError:
         # not authenticated, do nothing
         pass
