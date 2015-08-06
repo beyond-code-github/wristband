@@ -24,6 +24,7 @@ def test_login_successful(mocked_session, mocked_ldap_authentication, client):
     assert json.loads(resource.data) == {'status': 'Authorised'}
     assert resource.status_code == 200
     assert mocked_session['authenticated'] is True
+    assert mocked_session['username'] == 'username'
 
 
 @mock.patch('app.ldap_authentication')
@@ -39,11 +40,12 @@ def test_login_failed(mocked_session, mocked_ldap_authentication, client):
     assert json.loads(resource.data) == {'status': 'Unauthorised'}
     assert resource.status_code == 401
     assert 'authenticated' not in mocked_session
+    assert 'username' not in mocked_session
 
 
 @pytest.mark.parametrize(('mocked_session', ), [
     (
-        {'authenticated': True},
+        {'authenticated': True, 'username': 'test_username'},
     ),
     (
         {},
@@ -55,5 +57,6 @@ def test_logout(mocked_session, client):
         url = url_for('main_app.logout')
         resource = client.get(url)
         assert 'authenticated' not in ms
+        assert 'username' not in ms
         assert json.loads(resource.data) == {'status': 'OK'}
         assert resource.status_code == 200
