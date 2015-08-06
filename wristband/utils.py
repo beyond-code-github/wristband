@@ -99,3 +99,7 @@ def get_jenkins_uri(environments, deploy_env_name):
         return environments[deploy_env_name]["jenkins_uri"]
     except KeyError:
         return None
+
+
+def log_formatter(message):
+    return json.dumps({'app': 'wristband-frontend', 'message': message})
