@@ -3,9 +3,8 @@ source = wristband
 parallel = True
 branch = True
 omit = wristband/config/*.py
-       wristband/__init__.py
        wristband/api/__init__.py
-
+ignore_errors = True
 
 
 

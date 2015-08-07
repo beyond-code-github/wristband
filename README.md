@@ -1,7 +1,7 @@
 # wristband
 
 [![Apache-2.0 license](http://img.shields.io/badge/license-Apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/hmrc/wristband.svg)](https://travis-ci.org/hmrc/wristband) [ ![Download](https://api.bintray.com/packages/hmrc/releases/wristband/images/download.svg) ](https://bintray.com/hmrc/releases/wristband/_latestVersion)
-[![Coverage Status](https://coveralls.io/repos/hmrc/wristband/badge.svg?branch=master&service=github)](https://coveralls.io/github/hmrc/wristband?branch=master)
+[![codecov.io](http://codecov.io/github/hmrc/wristband/coverage.svg?branch=master)](http://codecov.io/github/hmrc/wristband?branch=master)
 
 ## What is this?
 
@@ -53,6 +53,10 @@ python wristband/app.py
 1. Set up test dependencies with `pip install -r requirements-tests.txt`.
 2. Write awesome code and tests
 3. Open a pull request with your branch
+
+## Coverage graph
+
+![codecov.io](http://codecov.io/github/hmrc/wristband/branch.svg?branch=master)
 
 [1]: https://github.tools.tax.service.gov.uk/HMRC/wristband-frontend
 
