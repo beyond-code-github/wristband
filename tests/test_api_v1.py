@@ -1,4 +1,5 @@
 from flask import json, url_for
+from flask.ext.restful import Resource
 import mock
 
 ALL_PIPELINES_MOCK = mock.Mock(return_value={
@@ -68,9 +69,10 @@ def test_api_config_endpoint(all_releases_mock, client):
     assert 'pipelines' in resource.data
 
 
+@mock.patch('api.v1.session', new_callable=dict)
 @mock.patch('api.v1.get_jenkins_uri')
 @apply_mocks('all_releases', 'jenkins', 'all_pipelines')
-def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_mock, client, config):
+def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_mock,  mocked_session, client):
     JENKINS_URL = 'https://username:pass@staging-zone_one'
     all_releases_mock.return_value = [
         {
@@ -80,8 +82,8 @@ def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_moc
             "version": "0.0.8"
         }
     ]
-    config['ENVIRONMENTS'] = []  # just needs to be there to avoid KeyError
     get_jenkins_uri_mock.return_value = JENKINS_URL
+    mocked_session.update({'username': 'test_username'})
 
     expected_response = "".join([
         'event: queued\ndata: {"status": "OK"}\n\n',

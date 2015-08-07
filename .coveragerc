@@ -21,6 +21,7 @@ exclude_lines =
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError
     raise NotImplementedError
+    pass
 
     # Don't complain if tests don't check for main file call
     if __name__ == .__main__.:

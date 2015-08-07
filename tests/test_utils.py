@@ -57,7 +57,7 @@ def test_extract_environments_parts(env_name, expected_result):
     (Mock(), [{'app_name': 'test'}])
 ])
 def test_get_all_releases(mock_response, expected_result):
-    with mock.patch('wristband.utils.requests.get') as mock_get:
+    with mock.patch('utils.requests.get') as mock_get:
         if mock_response:
             mock_response.json.return_value = [{'an': 'test'}]
         mock_get.return_value = mock_response
