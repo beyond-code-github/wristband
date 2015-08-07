@@ -8,5 +8,3 @@
   roles:
     - common
     - virtualenv
-    - postgres
-    - django
