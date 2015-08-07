@@ -54,6 +54,10 @@ python wristband/app.py
 2. Write awesome code and tests
 3. Open a pull request with your branch
 
+## Coverage graph
+
+![codecov.io](http://codecov.io/github/hmrc/wristband/branch.svg?branch=master)
+
 [1]: https://github.tools.tax.service.gov.uk/HMRC/wristband-frontend
 
 
