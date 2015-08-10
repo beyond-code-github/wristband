@@ -1,4 +1,16 @@
 ---
+- name: Install required Python packages
+  apt: name={{ item }} state=present
+  with_items:
+    - python-virtualenv
+    - python-pip
+    - python-setuptools
+    - python-dev
+    - libldap2-dev
+    - libsasl2-dev
+    - libssl-dev
+    - libffi-dev
+
 - name: Install required PIP packages inside the virtualenv
   sudo: false
   pip: requirements=/vagrant/requirements-tests.txt virtualenv={{ virtualenv_path }}

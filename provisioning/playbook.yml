@@ -8,3 +8,8 @@
   roles:
     - common
     - virtualenv
+    - role: bennojoy.openldap_server
+      openldap_server_domain_name: test.com
+      openldap_server_rootpw: password
+      openldap_server_enable_ssl: false
+    - environment

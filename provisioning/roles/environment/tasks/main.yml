@@ -1,0 +1,8 @@
+---
+
+- name: Add system-wide environment variables
+  lineinfile: dest=/etc/environment line="{{item.key}}={{item.value}}"
+  with_dict: "{{envs}}"
+
+- name: Add host.name in hosts file
+  lineinfile: dest=/etc/hosts line="127.0.0.1       local.host"

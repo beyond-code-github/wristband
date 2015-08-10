@@ -7,14 +7,6 @@
   with_items:
     - language-pack-en
     - git
-    - python-virtualenv
-    - python-pip
-    - python-setuptools
-    - python-dev
-    - libldap2-dev
-    - libsasl2-dev
-    - libssl-dev
-    - libffi-dev
 
 - name: Install foreman
   gem: name=foreman state=latest
