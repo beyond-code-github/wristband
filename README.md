@@ -27,9 +27,10 @@ pip install -r requirements-tests.txt
 
 - [Install Vagrant](https://docs.vagrantup.com/v2/installation/)
 - [Install Ansible](https://docs.ansible.com/ansible/intro_installation.html)
+- `$ ansible-galaxy install bennojoy.openldap_server` to install the Ansible LDAP module: 
 - `$ vagrant up` to spin the VM, provision will apply
 - `$ vagrant ssh` to ssh into the VM
-- Run the app using the command:
+- When inside the VM run the app using the command:
 
 PIPELINES='one,two'  \
 ENVIRONMENTS='qa-one,qa-two,staging-one,staging-two' \
@@ -45,7 +46,7 @@ python app.py
 (SECRET_KEY, PORT, LDAP_URL, LDAP_BASE_DN are set as system wide variable environments, pass them in the previous
 command to override the default values)
 
-- Log in using admin/password
+- Log in the app using admin/password
 
 ## Requirements
 
