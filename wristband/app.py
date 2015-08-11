@@ -1,42 +1,14 @@
 import os
 
-from flask import Flask, jsonify, Blueprint, session, request
+from flask import Flask, jsonify, Blueprint
 
 from api.v1 import api_v1_bp, API_VERSION_V1
-from auth import ldap_authentication
 
 main_app = Blueprint('main_app', __name__)
 
 
 @main_app.route('/ping/ping')
 def ping():
-    return jsonify({'status': 'OK'})
-
-
-@main_app.route('/login', methods=['POST'])
-def login():
-    """
-    Ty to authenticate against LDAP, if successful drop a cookie to remember the user session
-    """
-    username = request.form['username']
-    password = request.form['password']
-    user = ldap_authentication(username, password)
-    if user:
-        session['authenticated'] = True
-        session['username'] = username
-        return jsonify({'status': 'Authorised'})
-    else:
-        return jsonify({'status': 'Unauthorised'}), 401
-
-
-@main_app.route('/logout', methods=['GET'])
-def logout():
-    try:
-        del session['authenticated']
-        del session['username']
-    except KeyError:
-        # not authenticated, do nothing
-        pass
     return jsonify({'status': 'OK'})
 
 
