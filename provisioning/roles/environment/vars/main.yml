@@ -1,0 +1,7 @@
+---
+
+envs:
+  PORT: 3002
+  LDAP_URL: ldap://local.host
+  LDAP_BASE_DN: dc=test,dc=com
+  CONFIG_FILE: config/production.py

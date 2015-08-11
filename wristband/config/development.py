@@ -22,7 +22,7 @@ PIPELINES = {
 RELEASES_URI = "https://releases.tax.service.gov.uk/apps"
 
 LDAP = {
-    'url': 'ldap://test',
-    'user_dn': 'uid=user,dc=example,dc=com',
-    'base_dn': 'dc=example,dc=com'
+    'url': 'ldap://local.host',
+    'user_dn': 'uid={username},dc=test,dc=com',
+    'base_dn': 'dc=test,dc=com'
 }

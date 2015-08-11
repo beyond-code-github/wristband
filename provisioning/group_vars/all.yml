@@ -1,0 +1,4 @@
+---
+virtualenv_path: /home/vagrant/venv
+virtualenv_binaries: /home/vagrant/venv/bin
+project_folder: /vagrant/wristband/
