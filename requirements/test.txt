@@ -1,4 +1,4 @@
--r requirements.txt
+-r base.txt
 pytest==2.7.2
 pytest-cov==2.0.0
 pytest-flask==0.8.1

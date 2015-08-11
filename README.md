@@ -18,10 +18,7 @@ To run wristband;
 
 $ virtualenv env
 $ source env/bin/activate
-$ pip install -r requirements.txt
-
-For tests run this in addition to the ones above;
-pip install -r requirements-tests.txt
+$ pip install -r requirements/local.txt
 
 ### Vagrant 
 
