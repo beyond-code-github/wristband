@@ -43,8 +43,11 @@ ENVIRONMENT_qa_two_jenkins_uri=https://deploy-qa-two.tax.service.gov.uk  \
 ENVIRONMENT_staging_one_jenkins_uri=https://wristband:pass@deploy-staging-one.tax.service.gov.uk  \
 ENVIRONMENT_staging_two_jenkins_uri=https://deploy-staging-two.tax.service.gov.uk  \
 PIPELINE_one=qa-one,staging-one \
-PIPELINE_two=qa-two,staging-two
-CONFIG_FILE=config/production.py
+PIPELINE_two=qa-two,staging-two \
+LDAP_URL=ldap://ldap_url.com \
+LDAP_BASE_DN=dc=example,dc=com \
+CONFIG_FILE=config/production.py \
+SECRET_KEY=your_secret_key \
 python wristband/app.py
 
 ## Contributing

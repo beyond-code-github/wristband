@@ -1,5 +1,7 @@
 from flask import json, url_for
+from flask.ext.restful import Resource
 import mock
+import pytest
 
 ALL_PIPELINES_MOCK = mock.Mock(return_value={
     "zone_one": ["qa-zone_one", "staging-zone_one"],
@@ -68,9 +70,10 @@ def test_api_config_endpoint(all_releases_mock, client):
     assert 'pipelines' in resource.data
 
 
+@mock.patch('api.v1.session', new_callable=dict)
 @mock.patch('api.v1.get_jenkins_uri')
 @apply_mocks('all_releases', 'jenkins', 'all_pipelines')
-def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_mock, client, config):
+def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_mock,  mocked_session, client):
     JENKINS_URL = 'https://username:pass@staging-zone_one'
     all_releases_mock.return_value = [
         {
@@ -80,8 +83,8 @@ def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_moc
             "version": "0.0.8"
         }
     ]
-    config['ENVIRONMENTS'] = []  # just needs to be there to avoid KeyError
     get_jenkins_uri_mock.return_value = JENKINS_URL
+    mocked_session.update({'username': 'test_username'})
 
     expected_response = "".join([
         'event: queued\ndata: {"status": "OK"}\n\n',
@@ -97,3 +100,54 @@ def test_promote_sse_stream(all_releases_mock, jenkins_mock, get_jenkins_uri_moc
     jenkins_mock.assert_has_calls([mock.call(
         JENKINS_URL.replace("username:pass@", ""),
         username="username", password="pass")], any_order=True)
+
+
+@mock.patch('api.v1.ldap_authentication')
+@mock.patch('api.v1.session', new_callable=dict)
+def test_login_successful(mocked_session, mocked_ldap_authentication, client):
+    """
+    For what we care in this test the session behaves like a dictionary
+    Session is then replaced with a dictionary for easy testing
+    """
+    mocked_ldap_authentication.return_value = True
+    url = url_for('api_v1.login')
+    resource = client.post(url, data={'username': 'username', 'password': 'password'})
+    assert json.loads(resource.data) == {'status': 'Authorised'}
+    assert resource.status_code == 200
+    assert mocked_session['authenticated'] is True
+    assert mocked_session['username'] == 'username'
+
+
+@mock.patch('api.v1.ldap_authentication')
+@mock.patch('api.v1.session', new_callable=dict)
+def test_login_failed(mocked_session, mocked_ldap_authentication, client):
+    """
+    For what we care in this test the session behaves like a dictionary
+    Session is then replaced with a dictionary for easy testing
+    """
+    mocked_ldap_authentication.return_value = False
+    url = url_for('api_v1.login')
+    resource = client.post(url, data={'username': 'username', 'password': 'password'})
+    assert json.loads(resource.data) == {'status': 'Unauthorised'}
+    assert resource.status_code == 401
+    assert 'authenticated' not in mocked_session
+    assert 'username' not in mocked_session
+
+
+@pytest.mark.parametrize(('mocked_session', ), [
+    (
+        {'authenticated': True, 'username': 'test_username'},
+    ),
+    (
+        {},
+    )
+])
+def test_logout(mocked_session, client):
+    with mock.patch('api.v1.session', new_callable=dict) as ms:
+        ms.update(mocked_session)
+        url = url_for('api_v1.logout')
+        resource = client.get(url)
+        assert 'authenticated' not in ms
+        assert 'username' not in ms
+        assert json.loads(resource.data) == {'status': 'OK'}
+        assert resource.status_code == 200

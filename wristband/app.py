@@ -15,17 +15,20 @@ def ping():
 def create_app(conf_file=None):
     conf_file = conf_file or 'config/production.py'
     app = Flask(__name__)
-    app.config.from_envvar("CONFIG_FILE", conf_file)
+    app.secret_key = os.getenv('SECRET_KEY', 'not_so_secret_key')
+    app.config.from_envvar('CONFIG_FILE', conf_file)
+    # blueprint registration
     app.register_blueprint(main_app)
     app.register_blueprint(
         api_v1_bp,
         url_prefix='/api/v{version}'.format(version=API_VERSION_V1)
     )
-
+    # make sure we don't accidentally enable any of the testing features
+    app.testing = False
     return app
 
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.getenv("PORT", "5000")))
+    app.run(debug=True, port=int(os.getenv('PORT', '5000')))
