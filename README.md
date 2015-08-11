@@ -2,6 +2,7 @@
 
 [![Apache-2.0 license](http://img.shields.io/badge/license-Apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/hmrc/wristband.svg)](https://travis-ci.org/hmrc/wristband) [ ![Download](https://api.bintray.com/packages/hmrc/releases/wristband/images/download.svg) ](https://bintray.com/hmrc/releases/wristband/_latestVersion)
 [![codecov.io](http://codecov.io/github/hmrc/wristband/coverage.svg?branch=master)](http://codecov.io/github/hmrc/wristband?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/wristband/badge/?version=latest)](https://readthedocs.org/projects/wristband/?badge=latest)
 
 ## What is this?
 
