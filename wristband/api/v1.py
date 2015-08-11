@@ -3,13 +3,14 @@ from urlparse import urlparse
 import logging
 
 from flask import Blueprint, Response, current_app, session
-from flask_restful import Api
+from flask.ext.restful import reqparse
+from flask_restful import Api, Resource
 from jenkinsapi.jenkins import Jenkins
 
 from utils import get_all_releases, get_all_app_names, get_all_releases_of_app_in_env, \
     get_all_pipelines, get_all_environments, make_environment_groups, sse, extract_environment_parts, \
     get_jenkins_uri, log_formatter
-from auth import AuthenticatedResource
+from auth import AuthenticatedResource, ldap_authentication
 
 MessageTuple = namedtuple('MessageTuple', ['key', 'value'])
 
@@ -18,6 +19,40 @@ API_VERSION = API_VERSION_V1
 
 api_v1_bp = Blueprint('api_v1', __name__)
 api_v1 = Api(api_v1_bp)
+
+parser = reqparse.RequestParser()
+parser.add_argument('username', type=str)
+parser.add_argument('password', type=str)
+
+@api_v1.resource('/login')
+class Login(Resource):
+    """
+    Ty to authenticate against LDAP, if successful drop a cookie to remember the user session
+    """
+
+    def post(self):
+        args = parser.parse_args()
+        username = args['username']
+        password = args['password']
+        user = ldap_authentication(username, password)
+        if user:
+            session['authenticated'] = True
+            session['username'] = username
+            return {'status': 'Authorised'}
+        else:
+            return {'status': 'Unauthorised'}, 401
+
+
+@api_v1.resource('/logout')
+class Logout(AuthenticatedResource):
+    def get(self):
+        try:
+            del session['authenticated']
+            del session['username']
+        except KeyError:
+            # keys are not there for whaterver reason, do nothing
+            pass
+        return {'status': 'OK'}
 
 
 @api_v1.resource('/config')
@@ -77,7 +112,7 @@ class Promotion(AuthenticatedResource):
                                                                   app=app_name,
                                                                   version=app_version,
                                                                   env=deploy_env.full_name)
-                ))
+            ))
 
             def gen():
                 yield sse('queued', {'status': 'OK'})
