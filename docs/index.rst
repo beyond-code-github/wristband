@@ -13,6 +13,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   concepts
+   installation
+
 
 
 Indices and tables
