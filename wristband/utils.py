@@ -15,7 +15,7 @@ MAPPING_KEYS = {
     'ver': 'version'
 }
 ENVIRONMENT_REGEX = r'^((?P<env>\w+)-(?P<security_level>\w+))$'
-RELEASES_APP_ENDPOINT = "https://releases.tax.service.gov.uk/{endpoint}"
+RELEASES_APP_ENDPOINT = "{}{{endpoint}}".format(current_app.config.get("RELEASES_URI"))
 
 EnvironmentsParts = namedtuple('EnvironmentParts', ['full_name', 'env', 'security_level'])
 
