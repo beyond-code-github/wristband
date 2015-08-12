@@ -3,7 +3,7 @@ from mock import Mock
 import pytest
 
 from utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts, \
-    make_environment_groups, get_jenkins_uri
+    make_environment_groups, get_jenkins_uri, booleanify
 
 
 @pytest.mark.parametrize(('dictionary', 'expected_result'), [
@@ -92,3 +92,15 @@ def test_make_environment_groups():
 ])
 def test_get_jenkins_uri(environments, deploy_env_name, expected_uri):
     assert get_jenkins_uri(environments, deploy_env_name) == expected_uri
+
+
+@pytest.mark.parametrize(('string', 'expected_result'), [
+    ('False', False),
+    ('false', False),
+    ('FALSE', False),
+    ('FaLsE', False),
+    ('True', True),
+    ('Hello', True)
+])
+def test_booleanify(string, expected_result):
+    assert booleanify(string) == expected_result

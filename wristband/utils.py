@@ -103,3 +103,15 @@ def get_jenkins_uri(environments, deploy_env_name):
 
 def log_formatter(message):
     return json.dumps({'app': 'wristband-frontend', 'message': message})
+
+
+def booleanify(string):
+    """
+    Return False if 'False' or 'false' is passed in
+    EVERYTHING ELSE is True
+
+    If no string is passed then it blows up, be nice :)
+    """
+    if string.lower() == 'false':
+        return False
+    return True

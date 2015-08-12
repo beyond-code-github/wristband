@@ -3,6 +3,7 @@ import os
 from flask import Flask, jsonify, Blueprint
 
 from api.v1 import api_v1_bp, API_VERSION_V1
+from utils import booleanify
 
 main_app = Blueprint('main_app', __name__)
 
@@ -24,7 +25,7 @@ def create_app(conf_file=None):
         url_prefix='/api/v{version}'.format(version=API_VERSION_V1)
     )
     # make sure we don't accidentally enable any of the testing features
-    app.authentication_enabled = os.getenv('AUTH', True)
+    app.authentication_enabled = booleanify(os.getenv('AUTH', True))
     return app
 
 
