@@ -9,7 +9,7 @@ from jenkinsapi.jenkins import Jenkins
 
 from utils import get_all_releases, get_all_app_names, get_all_releases_of_app_in_env, \
     get_all_pipelines, get_all_environments, make_environment_groups, sse, extract_environment_parts, \
-    get_jenkins_uri, log_formatter
+    get_jenkins_uri, log_formatter, get_user_from_session
 from auth import AuthenticatedResource, ldap_authentication
 
 MessageTuple = namedtuple('MessageTuple', ['key', 'value'])
@@ -106,7 +106,7 @@ class Promotion(AuthenticatedResource):
             dm = jenkins.get_job("deploy-microservice")
             params = {"APP": app_name, "APP_BUILD_NUMBER": app_version}
             running_job = dm.invoke(build_params=params, securitytoken=None)
-            username = session['username']
+            username = get_user_from_session(session)
             logging.info(log_formatter(
                 '{user} promoted {app}-{version} to {env}'.format(user=username,
                                                                   app=app_name,

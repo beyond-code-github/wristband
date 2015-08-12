@@ -34,6 +34,7 @@ Login/logut
 .. note::
 
     Authentication via LDAP is enabled by default, set the environment variable AUTH to False if you need it to be disabled.
+    If authentication is disabled the logs will contain anonymous_user as a user
 
 Wristband uses a simple client side session to keep track of the authenticated users.
 

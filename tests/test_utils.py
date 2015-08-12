@@ -3,7 +3,7 @@ from mock import Mock
 import pytest
 
 from utils import humanise_release_dict, extract_environment_parts, get_all_releases, EnvironmentsParts, \
-    make_environment_groups, get_jenkins_uri, booleanify
+    make_environment_groups, get_jenkins_uri, booleanify, get_user_from_session
 
 
 @pytest.mark.parametrize(('dictionary', 'expected_result'), [
@@ -104,3 +104,11 @@ def test_get_jenkins_uri(environments, deploy_env_name, expected_uri):
 ])
 def test_booleanify(string, expected_result):
     assert booleanify(string) == expected_result
+
+
+@pytest.mark.parametrize(('session', 'expected_result'), [
+    ({'username': 'John'}, 'John'),
+    ({}, 'anonymous_user')
+])
+def test_get_user_from_session(session, expected_result):
+    assert get_user_from_session(session) == expected_result

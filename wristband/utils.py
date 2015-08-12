@@ -115,3 +115,7 @@ def booleanify(string):
     if string.lower() == 'false':
         return False
     return True
+
+
+def get_user_from_session(session):
+    return session.get('username', 'anonymous_user')
