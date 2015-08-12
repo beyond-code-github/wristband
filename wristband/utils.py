@@ -15,7 +15,6 @@ MAPPING_KEYS = {
     'ver': 'version'
 }
 ENVIRONMENT_REGEX = r'^((?P<env>\w+)-(?P<security_level>\w+))$'
-RELEASES_APP_ENDPOINT = "{}{{endpoint}}".format(current_app.config.get("RELEASES_URI"))
 
 EnvironmentsParts = namedtuple('EnvironmentParts', ['full_name', 'env', 'security_level'])
 
@@ -39,7 +38,10 @@ def extract_environment_parts(environment_name):
 
 
 def get_all_releases():
-    url = RELEASES_APP_ENDPOINT.format(endpoint='apps')
+    url = "{}apps".format(
+        current_app.config.get(
+            "RELEASES_URI", "https://releases.tax.service.gov.uk/"))
+    print url
     response = requests.get(url)
     if response:
         releases = [humanise_release_dict(release) for release in response.json()]
