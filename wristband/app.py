@@ -25,7 +25,7 @@ def create_app(conf_file=None):
         url_prefix='/api/v{version}'.format(version=API_VERSION_V1)
     )
     # make sure we don't accidentally enable any of the testing features
-    app.authentication_enabled = booleanify(os.getenv('AUTH', True))
+    app.authentication_enabled = booleanify(os.getenv('AUTH', 'True'))
     return app
 
 
