@@ -10,6 +10,7 @@ Contents:
 
    concepts
    installation
+   first_steps
 
 
 
