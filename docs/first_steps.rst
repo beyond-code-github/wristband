@@ -41,3 +41,11 @@ Health check
 ------------
 
 - GET /ping/ping
+
+
+LDAP configuration
+------------------
+
+If Vagrant setup is not used then LDAP_URL and LDAP_BASE_DN have to be set as environment variables
+
+- LDAP_URL: needs to start with ldap://
