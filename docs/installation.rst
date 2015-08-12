@@ -23,18 +23,22 @@ Vagrant
 - `$ vagrant ssh` to ssh into the VM
 - When inside the VM run the app using the command:
 
-PIPELINES='one,two'  \
-ENVIRONMENTS='qa-one,qa-two,staging-one,staging-two' \
-ENVIRONMENT_qa_one_jenkins_uri=https://wristband:pass@deploy-qa-one.tax.service.gov.uk  \
-ENVIRONMENT_qa_two_jenkins_uri=https://deploy-qa-two.tax.service.gov.uk  \
-ENVIRONMENT_staging_one_jenkins_uri=https://wristband:pass@deploy-staging-one.tax.service.gov.uk  \
-ENVIRONMENT_staging_two_jenkins_uri=https://deploy-staging-two.tax.service.gov.uk  \
-PIPELINE_one=qa-one,staging-one \
-PIPELINE_two=qa-two,staging-two \
-CONFIG_FILE=config/production.py \
-python app.py
+.. code:: bash
 
-(SECRET_KEY, PORT, LDAP_URL, LDAP_BASE_DN are set as system wide variable environments, pass them in the previous
-command to override the default values)
+    PIPELINES='one,two'  \
+    ENVIRONMENTS='qa-one,qa-two,staging-one,staging-two' \
+    ENVIRONMENT_qa_one_jenkins_uri=https://wristband:pass@deploy-qa-one.tax.service.gov.uk  \
+    ENVIRONMENT_qa_two_jenkins_uri=https://deploy-qa-two.tax.service.gov.uk  \
+    ENVIRONMENT_staging_one_jenkins_uri=https://wristband:pass@deploy-staging-one.tax.service.gov.uk  \
+    ENVIRONMENT_staging_two_jenkins_uri=https://deploy-staging-two.tax.service.gov.uk  \
+    PIPELINE_one=qa-one,staging-one \
+    PIPELINE_two=qa-two,staging-two \
+    CONFIG_FILE=config/production.py \
+    python app.py
+
+.. note::
+
+    SECRET_KEY, PORT, LDAP_URL, LDAP_BASE_DN are set as system wide variable environments in the VM,
+    pass them in the previous command to override the default values or if you are working outside of the VM
 
 - Log in the app using admin/password
