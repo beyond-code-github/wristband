@@ -14,6 +14,7 @@ ENVIRONMENTS = {
         "jenkins_uri": "https://deploy-staging-zone_two.tax.service.gov.uk"
     },
 }
+
 PIPELINES = {
     "zone_one": ["dev", "qa-zone_one", "staging-zone_one"],
     "zone_two": ["dev", "qa-zone_two", "staging-zone_two"],

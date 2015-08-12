@@ -7,14 +7,15 @@ before_install:
 - pip install codecov
 
 install:
-- pip install -r requirements-tests.txt
+- pip install -r requirements/test.txt
 
 script:
-- py.test -v --cov=wristband --cov-report term-missing --cov-report xml --cov-config .coveragerc
+- py.test -v --cov=wristband --cov-report term-missing --cov-report xml --cov-config .coveragerc --durations=10
 
 after_success:
 - codecov
 
 notifications:
+  email: false
   slack:
     secure: Vl1Q4AiuObjhVj0YSSzdzlCMBDpRR/DyiCC1c1m1CmN9tZbMgmzPQiVE+sRCyOo5FzN9pSDIZ8k4oUqeOWc4DtXZ/VPfvmjQRr3WdNaTFqCaqoa90CNdJIaB6aYHznWbsj6I9OPehZhrdTLG1d4saPwkxSEMqWKE0uWFDGLv4yq0r3AsXLYuNFzRuGxIE0kfgOncHkuyG37uyL3C6X18/djncjcYUwDljp0CWp405V9N8vl8ri1ce5fPYcNWjEkBpPoc/kfGTOcxit8oeaBf1uK1++207FZI1wVrI+NC4vvaI4opVSBfxBzle+4i6C5jJ2nFTmKkQy8IuunS5mt5vwifR4dJRxSNLR/8kOAc/MVb1QQZ0NLrkQsl/aj5DlsvROGbxV710Mf0i1weUZDevQYfk3ZgxpbNaknz5yzs3mz/5OUnjC7ZQWS6RtLiZlOkqGJL/iqn68/Ra03hVgInab+eEg44qRDmt0nS9wo7BhLByryX9FWTzWQBBxDlD3LxBJHav5KoAZbOCSSiY4bo1SU49ZWxFzr6YGVPLdKmDwVeA01G0Q+TgRfn8D8mQeXh9BA0+V4UpQhWBF8+Qehdg0DcqMADiQkcINFC/gisNfkQcEVpZgj8gD/h4RNQJDK5sKVDzBP5eUA0eIP+O37VM3Ly5/wF8ZSd1KJRyb6//Xw=

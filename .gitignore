@@ -53,8 +53,8 @@ docs/_build/
 # PyBuilder
 target/
 
-#Pycharm
+# Pycharm
 .idea
 
-#Vagrant
+# Vagrant
 .vagrant
