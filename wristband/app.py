@@ -24,11 +24,11 @@ def create_app(conf_file=None):
         url_prefix='/api/v{version}'.format(version=API_VERSION_V1)
     )
     # make sure we don't accidentally enable any of the testing features
-    app.testing = False
+    app.authentication_enabled = os.getenv('AUTH', True)
     return app
 
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.getenv('PORT', '5000')))
+    app.run(debug=True, host='0.0.0.0', port=int(os.getenv('PORT', '5000')))

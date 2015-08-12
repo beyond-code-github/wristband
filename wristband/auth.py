@@ -27,15 +27,16 @@ def authenticate(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if current_app.testing:
+        if current_app.authentication_enabled:
+            # not in testing mode, check auth
+            if not getattr(func, 'authenticate', True):
+                return func(*args, **kwargs)
+            if session.get('authenticated', False):
+                return func(*args, **kwargs)
+            abort(401)
+        else:
             # skip authentication for testing purposes
             return func(*args, **kwargs)
-        # not in testing mode, check auth
-        if not getattr(func, 'authenticate', True):
-            return func(*args, **kwargs)
-        if session.get('authenticated', False):
-            return func(*args, **kwargs)
-        abort(401)
 
     return wrapper
 

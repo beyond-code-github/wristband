@@ -31,6 +31,10 @@ Wristband needs a few variable environments to be set in order to run properly, 
 Login/logut
 -----------
 
+.. note::
+
+    Authentication via LDAP is enabled by default, set the environment variable AUTH to False if you need it to be disabled.
+
 Wristband uses a simple client side session to keep track of the authenticated users.
 
 - POST /api/{version}/login - accepts username and password and creates the cookie if the login credentials are correct

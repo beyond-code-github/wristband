@@ -9,7 +9,7 @@ def app():
     Testing app with testing flag set to True and testing configs pre-loaded
     """
     app = create_app()
-    app.testing = True
+    app.authentication_enabled = False
     app.config.update(dict(
         ENVIRONMENTS={
             "qa-zone_one": {
