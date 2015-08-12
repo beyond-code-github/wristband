@@ -16,7 +16,7 @@ Virtualenv
 Vagrant
 -------
 
-- [Install Vagrant](https://docs.vagrantup.com/v2/installation/)
-- [Install Ansible](https://docs.ansible.com/ansible/intro_installation.html)
+- `Install Vagrant <https://docs.vagrantup.com/v2/installation/>`_
+- `Install Ansible <https://docs.ansible.com/ansible/intro_installation.html>`_
 - `$ ansible-galaxy install bennojoy.openldap_server` to install the Ansible LDAP module:
 - `$ vagrant up` to spin the VM, provision will apply
