@@ -1,0 +1,3 @@
+[run]
+include = wristband/*
+omit = *migrations*
