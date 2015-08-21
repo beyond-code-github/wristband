@@ -8,14 +8,14 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedSimpleRouter
 
 from wristband.stages.views import StagesViewSet
-from wristband.apps.views import AppViewSet
+from wristband.apps.views import NestedAppViewSet, AppViewSet
 
 router = DefaultRouter()
 router.register(r'stages', StagesViewSet, base_name='stages')
 router.register(r'apps', AppViewSet, base_name='apps')
 
 stages_router = NestedSimpleRouter(router, r'stages', lookup='stage')
-stages_router.register(r'apps', AppViewSet, base_name='apps')
+stages_router.register(r'apps', NestedAppViewSet, base_name='apps')
 
 
 urlpatterns = [
