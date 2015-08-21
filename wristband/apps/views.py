@@ -1,8 +1,8 @@
 from wristband.common.viewsets import ReadOnlyViewSet
 
-from .providers import ReleaseAppProvider
+from .providers import ReleaseAppDataProvider
 from .serializers import AppSerializer
 
 class AppViewSet(ReadOnlyViewSet):
     serializer_class = AppSerializer
-    data_provider_class = ReleaseAppProvider
+    data_provider_class = ReleaseAppDataProvider

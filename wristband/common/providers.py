@@ -1,4 +1,6 @@
-class Provider(object):
+from wristband.common.mixins import JsonDataProviderRetrieveMixin
+
+class DataProvider(object):
     """
     Read-only data provider
     """
@@ -20,3 +22,7 @@ class Provider(object):
         Return a single object, looked up by the passed pk
         """
         raise NotImplementedError('The method get_retrieve_data must be implemented')
+
+
+class JsonDataProvider(DataProvider, JsonDataProviderRetrieveMixin):
+    pass
