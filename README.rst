@@ -43,4 +43,11 @@ First make sure to create and activate a virtualenv_, then open a terminal at th
 
     $ pip install -r requirements/local.txt
 
+
+Running
+^^^^^^^
+
+     $ manage.py runserver
+
+
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/
