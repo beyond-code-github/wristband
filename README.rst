@@ -1,15 +1,31 @@
 Wristband
-==============================
+=========
 
-A short description of the project.
+.. image:: http://img.shields.io/badge/license-Apache-brightgreen.svg
+    :target: http://www.apache.org/licenses/LICENSE-2.0.html
+    :alt: Apache-2.0 license
 
+.. image:: https://travis-ci.org/hmrc/wristband.svg?branch=master
+    :target: https://travis-ci.org/hmrc/wristband
+    :alt: Build status
 
-LICENSE: Apache 2
+.. image:: http://codecov.io/github/hmrc/wristband/coverage.svg?branch=master
+    :target: http://codecov.io/github/hmrc/wristband?branch=master
+    :alt: Code coverage
+
+.. image:: https://readthedocs.org/projects/wristband/badge/?version=latest
+    :target: https://readthedocs.org/projects/wristband/?badge=latest
+    :alt: Documentation Status
+
+A REST API for the Wristband deployment service.
+
+It speaks HTTP and JSON and executes actions defined by you. It is designed to work with `wristband-frontend <https://github.com/hmrc/wristband-frontend>`_, but will work fine without it.
 
 Settings
 ------------
 
-wristband relies extensively on environment settings which **will not work with Apache/mod_wsgi setups**. It has been deployed successfully with both Gunicorn/Nginx and even uWSGI/Nginx.
+Wristband relies extensively on environment settings which **will not work with Apache/mod_wsgi setups**.
+It has been deployed successfully with both Gunicorn/Nginx and even uWSGI/Nginx.
 
 For configuration purposes, the following table maps the 'wristband' environment variables to their Django setting:
 
