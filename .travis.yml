@@ -1,16 +1,23 @@
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq build-essential gettext python-dev zlib1g-dev libpq-dev xvfb
-  - sudo apt-get install -qq libtiff4-dev libjpeg8-dev libfreetype6-dev liblcms1-dev libwebp-dev
-  - sudo apt-get install -qq graphviz-dev python-setuptools python3-dev python-virtualenv python-pip
-  - sudo apt-get install -qq firefox automake libtool libreadline6 libreadline6-dev libreadline-dev
-  - sudo apt-get install -qq libsqlite3-dev libxml2 libxml2-dev libssl-dev libbz2-dev wget curl llvm
 language: python
+
 python:
-  - "3.4"
+- '2.7'
+
+before_install:
+- pip install codecov
+
 install:
-  - "pip install hitch"
-  - "cd tests"
-  - "hitch init"
+- pip install -r requirements/test.txt
+
 script:
-  - "hitch test . --extra '{\"xvfb\":true, \"pause_on_failure\":false}'"
+- py.test -v --cov=wristband --cov-report term-missing --cov-report xml --cov-config .coveragerc --durations=10
+
+after_success:
+- codecov
+
+notifications:
+  email: false
+  slack:
+    secure: Vl1Q4AiuObjhVj0YSSzdzlCMBDpRR/DyiCC1c1m1CmN9tZbMgmzPQiVE+sRCyOo5FzN9pSDIZ8k4oUqeOWc4DtXZ/VPfvmjQRr3WdNaTFqCaqoa90CNdJIaB6aYHznWbsj6I9OPehZhrdTLG1d4saPwkxSEMqWKE0uWFDGLv4yq0r3AsXLYuNFzRuGxIE0kfgOncHkuyG37uyL3C6X18/djncjcYUwDljp0CWp405V9N8vl8ri1ce5fPYcNWjEkBpPoc/kfGTOcxit8oeaBf1uK1++207FZI1wVrI+NC4vvaI4opVSBfxBzle+4i6C5jJ2nFTmKkQy8IuunS5mt5vwifR4dJRxSNLR/8kOAc/MVb1QQZ0NLrkQsl/aj5DlsvROGbxV710Mf0i1weUZDevQYfk3ZgxpbNaknz5yzs3mz/5OUnjC7ZQWS6RtLiZlOkqGJL/iqn68/Ra03hVgInab+eEg44qRDmt0nS9wo7BhLByryX9FWTzWQBBxDlD3LxBJHav5KoAZbOCSSiY4bo1SU49ZWxFzr6YGVPLdKmDwVeA01G0Q+TgRfn8D8mQeXh9BA0+V4UpQhWBF8+Qehdg0DcqMADiQkcINFC/gisNfkQcEVpZgj8gD/h4RNQJDK5sKVDzBP5eUA0eIP+O37VM3Ly5/wF8ZSd1KJRyb6//Xw=
+    on_success: change
+    on_failure: always
