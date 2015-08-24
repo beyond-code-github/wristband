@@ -81,7 +81,7 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
                 # we can save complexity if we convert the data structure into a dictionary of dictionaries
                 # so we can lookup by app name have O(n)
-                already_seen_app_index = next(index for (index, a) in enumerate(ordered_data) if a["name"] == app_name)
+                already_seen_app_index = next(index for (index, a) in enumerate(ordered_data) if a["an"] == app_name)
                 app_stages_names = [stage['name'] for stage in data[already_seen_app_index]['stages']]
                 if app_stage not in app_stages_names:
                     # we don't have this stage at all, just add it
