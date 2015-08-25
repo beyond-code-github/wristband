@@ -1,9 +1,8 @@
 import requests
 from django.conf import settings
 
-from wristband.common.utils import extract_stage
-
-from wristband.common.providers import JsonDataProvider
+from wristband.common.utils import extract_stage, extract_security_zone_from_env
+from wristband.providers.generics import JsonDataProvider
 
 
 class ParentReleaseAppDataProvider(JsonDataProvider):
