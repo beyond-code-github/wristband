@@ -69,19 +69,18 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
         ]
         """
         data = []
+        # this assumes that last seen corresponds to the latest version
         ordered_data = sorted(self.raw_data, key=lambda x: x['ls'], reverse=True)
-        already_seen = []
+        apps_indexes = {}
         for app in ordered_data:
             app_name = app['an']
             app_stage = extract_stage(app['env'])
-            if app_name in already_seen:
+            if app_name in apps_indexes.keys():
                 # we've already seen this app
                 # check if we already have the relevant stage,
                 # the data has been ordered, if we have this stage then we should already have the latest one
 
-                # we can save complexity if we convert the data structure into a dictionary of dictionaries
-                # so we can lookup by app name have O(n)
-                already_seen_app_index = next(index for (index, a) in enumerate(ordered_data) if a["an"] == app_name)
+                already_seen_app_index = apps_indexes[app_name]
                 app_stages_names = [stage['name'] for stage in data[already_seen_app_index]['stages']]
                 if app_stage not in app_stages_names:
                     # we don't have this stage at all, just add it
@@ -100,5 +99,5 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                     }]
                 }
                 data.append(app_to_be_added)
-                already_seen.append(app_name)
+                apps_indexes[app_name] = len(data) - 1
         return data
