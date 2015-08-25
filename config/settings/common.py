@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 
 import environ
+import mongoengine
 
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
 APPS_DIR = ROOT_DIR.path('wristband')
@@ -69,7 +70,6 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {}
-
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -171,5 +171,28 @@ REST_FRAMEWORK = {
 # APP SPECIFIC SETTINGS
 
 RELEASES_APP_URI = env('RELEASES_APP_URI', default='http://example.com/apps')
-
 STAGES = env('STAGES',  default='qa,staging')
+
+# MONGO
+# -----
+
+MONGO_DBNAME = env('MONGO_DB_NAME', default='wristband')
+MONGO_USER = env('MONGODB_USER', default='')
+MONGO_PASSWORD = env('MONGODB_PASSWORD', default='')
+MONGO_HOST = env('MONGODB_HOST', default='localhost')
+MONGO_PORT = env('MONGODB_PORT', default='27017')
+MONGO_CREDENTIALS = ''
+
+if MONGO_USER and MONGO_PASSWORD:
+    MONGO_CREDENTIALS = '{username}:{password}@'.format(username=MONGO_USER,
+                                                  password=MONGO_PASSWORD)
+
+MONGO_URI = 'mongodb://{credentials}{host}/{db_name}:{port}'.format(
+    credentials=MONGO_CREDENTIALS,
+    host=MONGO_HOST,
+    db_name=MONGO_DBNAME,
+    port=MONGO_PORT
+)
+
+mongoengine.connect(MONGO_DBNAME, host=MONGO_URI)
+
