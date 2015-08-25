@@ -26,3 +26,8 @@ class DataProvider(object):
 
 class JsonDataProvider(DataProvider, JsonDataProviderRetrieveMixin):
     pass
+
+
+class ServiceProvider(object):
+    def promote(self):
+        raise NotImplementedError('The method promote must be implemented')

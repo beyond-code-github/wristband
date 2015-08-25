@@ -54,3 +54,7 @@ node_modules/
 
 # virtual environments
 .env
+
+# Any YAML in config
+providers/*.yaml
+
