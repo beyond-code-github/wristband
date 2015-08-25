@@ -6,19 +6,19 @@ from wristband.apps.providers import NestedReleaseAppDataProvider, ReleaseAppDat
 MOCK_RELEASE_APP_RESPONSE = [
     {
         'an': 'a-b-test',
-        'env': 'qa-left',
+        'env': 'foo-left',
         'ver': '1.7.7',
         'ls': 10,
     },
     {
         'an': 'a-b-test',
-        'env': 'staging-left',
+        'env': 'bar-left',
         'ver': '1.7.2',
         'ls': 12
     },
     {
         'an': 'a-b-test',
-        'env': 'staging-left',
+        'env': 'foo-left',
         'ver': '1.7.1',
         'ls': 8
     }
@@ -31,17 +31,17 @@ def test_nested_release_app_data_provider(mocked_get_raw_data):
         {
             'name': 'a-b-test',
             'version': '1.7.7',
-            'stage': 'qa'
+            'stage': 'foo'
         },
         {
             'name': 'a-b-test',
             'version': '1.7.2',
-            'stage': 'staging'
+            'stage': 'bar'
         },
         {
             'name': 'a-b-test',
             'version': '1.7.1',
-            'stage': 'staging'
+            'stage': 'foo'
         }
     ]
     assert NestedReleaseAppDataProvider().list_data == expected_response
@@ -55,11 +55,11 @@ def test_release_app_data_provider(mocked_get_raw_data):
             'name': 'a-b-test',
                 'stages': [
                     {
-                       'name': 'staging',
+                       'name': 'bar',
                        'version': '1.7.2'
                     },
                     {
-                       'name': 'qa',
+                       'name': 'foo',
                        'version': '1.7.7'
                     }
                 ]
