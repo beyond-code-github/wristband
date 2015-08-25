@@ -56,5 +56,5 @@ node_modules/
 .env
 
 # Any YAML in config
-providers/*.yaml
+**/providers/*.yaml
 
