@@ -41,8 +41,17 @@ DJANGO_SECURE_FRAME_DENY                SECURE_FRAME_DENY           n/a         
 DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS   HSTS_INCLUDE_SUBDOMAINS     n/a                                            True
 DJANGO_SESSION_COOKIE_HTTPONLY          SESSION_COOKIE_HTTPONLY     n/a                                            True
 DJANGO_SESSION_COOKIE_SECURE            SESSION_COOKIE_SECURE       n/a                                            False
+MONGO_DB_NAME
 ======================================= =========================== ============================================== ======================================================================
 
+App specific environment variables
+
+======================================= =========================== ============================================== ======================================================================
+Environment Variable                    Django Setting              Development Default                            Production Default
+======================================= =========================== ============================================== ======================================================================
+STAGES                                  STAGES                      qa,staging                                     qa,staging
+RELEASES_APP_URI                        RELEASES_APP_URI            http://example.com/apps
+======================================= =========================== ============================================== ======================================================================
 
 Getting up and running
 ----------------------
