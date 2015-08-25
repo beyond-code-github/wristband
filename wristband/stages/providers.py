@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from wristband.common.providers import JsonDataProvider
+from wristband.providers.generics import JsonDataProvider
 
 
 class EnvVarStagesDataProvider(JsonDataProvider):

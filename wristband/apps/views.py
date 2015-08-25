@@ -12,3 +12,5 @@ class NestedAppViewSet(ReadOnlyViewSet):
 class AppViewSet(ReadOnlyViewSet):
     serializer_class = AppSerializer
     data_provider_class = ReleaseAppDataProvider
+
+

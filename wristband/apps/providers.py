@@ -16,19 +16,37 @@ class ParentReleaseAppDataProvider(JsonDataProvider):
     def extract_stage_from_env(env):
         return extract_stage(env)
 
+    @staticmethod
+    def extract_security_zone_from_env(env):
+        return extract_security_zone_from_env(env)
+
+    def to_models(self):
+        pass
+
 
 class NestedReleaseAppDataProvider(ParentReleaseAppDataProvider):
     def _get_list_data(self):
         """
         Show only the latest version per stage, filter by last seen
         """
-        return [{'name': app['an'],
+        data = [{'name': app['an'],
                  'version': app['ver'],
                  'stage': self.extract_stage_from_env(app['env'])}
                 for app in self.raw_data]
+        return sorted(data, key=lambda x: x['name'], reverse=True)
+
+    def to_models(self):
+        ordered_data = sorted(self.raw_data, key=lambda x: x['ls'], reverse=True)
+        return [{'name': app['an'],
+                 'stage': self.extract_stage_from_env(app['env']),
+                 'security_zone': self.extract_security_zone_from_env(app['env'])}
+                for app in ordered_data]
 
 
 class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
+    def _get_job_id_per_app(self):
+        pass
+
     def _get_list_data(self):
         """
         We need to get this format from the current releases app format
@@ -58,10 +76,12 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                         {
                            "name": "qa",
                            "version": "1.7.7"
+                           "job_id": 434532424
                         },
                         {
                            "name": "staging",
                            "version": "1.7.2"
+                           "job_id": 43453fdf3234
                         }
                     ]
             },
@@ -101,4 +121,4 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                 }
                 data.append(app_to_be_added)
                 already_seen.append(app_name)
-        return data
+        return sorted(data, key=lambda x: x['name'], reverse=True)

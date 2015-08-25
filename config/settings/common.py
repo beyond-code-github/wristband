@@ -38,6 +38,7 @@ THIRD_PARTY_APPS = (
 LOCAL_APPS = (
     'wristband.apps',
     'wristband.stages',
+    'wristband.providers',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

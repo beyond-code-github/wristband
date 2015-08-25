@@ -29,5 +29,10 @@ class JsonDataProvider(DataProvider, JsonDataProviderRetrieveMixin):
 
 
 class ServiceProvider(object):
-    def promote(self):
+    config = None
+
+    def promote(self, version):
         raise NotImplementedError('The method promote must be implemented')
+
+    def status(self, job_id):
+        pass
