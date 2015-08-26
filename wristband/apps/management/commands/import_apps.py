@@ -8,5 +8,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for app in NestedReleaseAppDataProvider().to_models():
-            if not App.objects(name=app['name']):
+            if not App.objects(name=app['name'], stage=app['stage']).first():
                 App(**app).save()

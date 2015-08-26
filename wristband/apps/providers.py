@@ -43,7 +43,7 @@ class NestedReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
 
 class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
-    def _get_job_id_per_app(self):
+    def _get_last_job_id_per_app(self, app_name):
         pass
 
     def _get_list_data(self):

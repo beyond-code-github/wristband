@@ -188,7 +188,7 @@ if MONGO_USER and MONGO_PASSWORD:
     MONGO_CREDENTIALS = '{username}:{password}@'.format(username=MONGO_USER,
                                                   password=MONGO_PASSWORD)
 
-MONGO_URI = 'mongodb://{credentials}{host}/{db_name}:{port}'.format(
+MONGO_URI = 'mongodb://{credentials}{host}:{port}/{db_name}'.format(
     credentials=MONGO_CREDENTIALS,
     host=MONGO_HOST,
     db_name=MONGO_DBNAME,
