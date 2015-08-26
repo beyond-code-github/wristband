@@ -1,5 +1,7 @@
-from wristband.common.viewsets import ReadOnlyViewSet
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from wristband.common.viewsets import ReadOnlyViewSet
 from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider
 from .serializers import NestedAppSerializer, AppSerializer
 
@@ -14,3 +16,6 @@ class AppViewSet(ReadOnlyViewSet):
     data_provider_class = ReleaseAppDataProvider
 
 
+class DeployAppView(APIView):
+    def put(self, request, format=None):
+        return Response('Hello')

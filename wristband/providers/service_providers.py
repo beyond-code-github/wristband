@@ -50,12 +50,11 @@ class JenkinsServiceProvider(ServiceProvider):
                 version_param_dictionary = filter(lambda x: x['name'] == 'APP_BUILD_NUMBER', build_info['actions'][0]['parameters'])[0]
                 version_to_check = version_param_dictionary['value']
                 if version_to_check == version:
-                    provider_id = potential_build_id
-                    job = Job(app=self.app, provider_name='jenkins', provider_id=provider_id)
+                    job = Job(app=self.app, provider_name='jenkins', provider_id=potential_build_id)
                     job.save()
                     break
             except jenkins.NotFoundException:
-                sleep(1)  # prevent from bashing Jenkins too often
+                sleep(1)  # prevents from bashing Jenkins too often
                 count += 1
 
     def status(self, job):

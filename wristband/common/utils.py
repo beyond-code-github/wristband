@@ -27,12 +27,12 @@ def get_security_zone_from_app_name(app_name):
 def get_last_job_id_by_app_name(app_name, stage):
     # FIXME, investigate __ to avoid doing two queries
     app = App.objects.get(name=app_name, stage=stage)
-    return str(Job.objects(app=app).no_cache().first().id)
+    return str(Job.objects(app=app).ordered_by_time(desc=True)[0].id)
 
 
 def get_last_job_status_by_app_name(app_name, stage):
     job_id = get_last_job_id_by_app_name(app_name, stage)
-    job = Job.objects.no_cache().get(id=job_id)
+    job = Job.objects.get(id=job_id)
     print job.provider_id
     return get_last_job_status_by_job(job)
 
