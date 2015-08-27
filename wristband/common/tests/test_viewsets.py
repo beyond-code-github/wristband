@@ -27,7 +27,7 @@ class DummyProvider(DataProvider):
 
     def get_retrieve_data(self, pk, *args, **kwargs):
         """
-        For some reason the mixin providing this code doesn't seem to work in the tests
+        FIXME For some reason the mixin providing this code doesn't seem to work in the tests
         This needs more investigation
         """
         filtered_data = filter(lambda x: x['name'] == pk, self.list_data)
