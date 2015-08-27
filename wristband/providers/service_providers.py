@@ -52,11 +52,12 @@ class JenkinsServiceProvider(ServiceProvider):
                 if version_to_check == version:
                     job = Job(app=self.app, provider_name='jenkins', provider_id=potential_build_id)
                     job.save()
-                    break
+                    return str(job.id)
             except jenkins.NotFoundException:
                 sleep(1)  # prevents from bashing Jenkins too often
                 count += 1
-        return str(job.id)
+            return None
+
 
     def status(self, job):
         build_info = self.server.get_build_info(self.job_name, job.provider_id)
