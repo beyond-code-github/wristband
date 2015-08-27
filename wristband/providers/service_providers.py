@@ -29,7 +29,7 @@ class JenkinsServiceProvider(ServiceProvider):
             "APP_BUILD_NUMBER": version
         }
         self.server.build_job(self.job_name, parameters=params)
-        self.save_job_info(version)
+        return self.save_job_info(version)
 
     def save_job_info(self, version):
         potential_build_id = self.server.get_job_info(self.job_name)['nextBuildNumber']
@@ -56,6 +56,7 @@ class JenkinsServiceProvider(ServiceProvider):
             except jenkins.NotFoundException:
                 sleep(1)  # prevents from bashing Jenkins too often
                 count += 1
+        return str(job.id)
 
     def status(self, job):
         build_info = self.server.get_build_info(self.job_name, job.provider_id)
