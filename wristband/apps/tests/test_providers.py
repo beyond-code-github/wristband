@@ -1,4 +1,5 @@
 import mock
+import pytest
 
 from wristband.apps.providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider
 
@@ -56,13 +57,42 @@ def test_release_app_data_provider(mocked_get_raw_data):
                 'stages': [
                     {
                        'name': 'bar',
-                       'version': '1.7.2'
+                       'version': '1.7.2',
+                       'job_id': None
                     },
                     {
                        'name': 'foo',
-                       'version': '1.7.7'
+                       'version': '1.7.7',
+                       'job_id': None
                     }
                 ]
         }
     ]
+    provider_under_test = ReleaseAppDataProvider()
+    provider_under_test.not_expired_jobs = []
     assert ReleaseAppDataProvider().list_data == expected_response
+
+
+class DummyApp(object):
+    def __init__(self, name, stage):
+        self.name = name
+        self.stage = stage
+
+
+class DummyJob(object):
+    def __init__(self, app, id):
+        self.app = app
+        self.id = id
+
+
+@pytest.mark.parametrize(('app_name', 'stage', 'expected_response'), [
+    ('a-b-test', 'bar', '1234'),
+    ('foo', 'bar', None)
+])
+def test_release_app_data_provider_get_last_job_id_per_app(app_name, stage, expected_response):
+    with mock.patch.object(ReleaseAppDataProvider, '_get_raw_data') as mocked_get_raw_data:
+        mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
+        provider_under_test = ReleaseAppDataProvider()
+        provider_under_test.not_expired_jobs = [DummyJob(app=DummyApp('a-b-test', 'bar'), id='1234'), ]
+
+        assert provider_under_test.get_last_job_id_per_app(app_name, stage) == expected_response

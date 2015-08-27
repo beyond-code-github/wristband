@@ -51,7 +51,7 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
     def get_last_job_id_per_app(self, app_name, stage):
         try:
-            return filter(lambda x: x.app.name == app_name and x.app.stage == stage, self.not_expired_jobs)[0]
+            return filter(lambda x: x.app.name == app_name and x.app.stage == stage, self.not_expired_jobs)[0].id
         except IndexError:
             return None
 
@@ -84,12 +84,12 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                         {
                            "name": "qa",
                            "version": "1.7.7"
-                           "job_id": 434532424
+                           "job_id": "434532424"
                         },
                         {
                            "name": "staging",
                            "version": "1.7.2"
-                           "job_id": 43453fdf3234
+                           "job_id": None
                         }
                     ]
             },
