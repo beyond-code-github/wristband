@@ -1,8 +1,12 @@
+import datetime
 import requests
 from django.conf import settings
 
 from wristband.common.utils import extract_stage, extract_security_zone_from_env
 from wristband.providers.generics import JsonDataProvider
+from wristband.providers.models import Job
+
+EXPIRY_JOB_TIME = datetime.datetime.now() - datetime.timedelta(minutes=10)
 
 
 class ParentReleaseAppDataProvider(JsonDataProvider):
@@ -43,8 +47,13 @@ class NestedReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
 
 class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
-    def _get_last_job_id_per_app(self, app_name):
-        pass
+    not_expired_jobs = Job.objects(start_time__gte=EXPIRY_JOB_TIME).ordered_by_time(desc=True) # this is a list!
+
+    def get_last_job_id_per_app(self, app_name, stage):
+        try:
+            return filter(lambda x: x.app.name == app_name and x.app.stage == stage, self.not_expired_jobs)[0]
+        except IndexError:
+            return None
 
     def _get_list_data(self):
         """
@@ -105,7 +114,8 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                     # we don't have this stage at all, just add it
                     data[already_seen_app_index]['stages'].append({
                         'name': app_stage,
-                        'version': app['ver']
+                        'version': app['ver'],
+                        'job_id': self.get_last_job_id_per_app(app_name, app_stage)
                     })
             else:
                 # this is the best case
@@ -114,7 +124,8 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                     'name': app_name,
                     'stages': [{
                         'name': app_stage,
-                        'version': app['ver']
+                        'version': app['ver'],
+                        'job_id': self.get_last_job_id_per_app(app_name, app_stage)
                     }]
                 }
                 data.append(app_to_be_added)

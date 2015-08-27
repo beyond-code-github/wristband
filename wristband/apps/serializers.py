@@ -11,6 +11,6 @@ class AppSerializer(serializers.Serializer):
     name = serializers.CharField()
     stages = serializers.ListField(
         child=serializers.DictField(
-            child=serializers.CharField()
+            child=serializers.CharField(allow_null=True)
         )
     )

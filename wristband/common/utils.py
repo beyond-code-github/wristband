@@ -33,7 +33,6 @@ def get_last_job_id_by_app_name(app_name, stage):
 def get_last_job_status_by_app_name(app_name, stage):
     job_id = get_last_job_id_by_app_name(app_name, stage)
     job = Job.objects.get(id=job_id)
-    print job.provider_id
     return get_last_job_status_by_job(job)
 
 
