@@ -100,4 +100,4 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                 }
                 data.append(app_to_be_added)
                 apps_indexes[app_name] = len(data) - 1
-        return data
+        return sorted(data, key=lambda x: x['name'], reverse=True)
