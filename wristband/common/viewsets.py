@@ -25,7 +25,7 @@ class ReadOnlyViewSet(ViewSet):
             raise NotFound()
 
     def _get_list_data(self):
-        return self.data_provider_class().get_list_data()
+        return self.data_provider_class().list_data
 
     def _get_filtered_list_data(self, pk, lookup_key):
         return self.data_provider_class().get_filtered_list_data(pk, lookup_key)

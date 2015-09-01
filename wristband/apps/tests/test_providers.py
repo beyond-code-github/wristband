@@ -48,6 +48,26 @@ def test_nested_release_app_data_provider(mocked_get_raw_data):
     assert NestedReleaseAppDataProvider().list_data == expected_response
 
 
+@mock.patch.object(NestedReleaseAppDataProvider, '_get_raw_data')
+def test_nested_release_app_data_provider_filtered_list_data(mocked_get_raw_data):
+    mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
+    expected_response = [
+        {
+            'name': 'a-b-test',
+            'version': '1.7.2',
+            'stage': 'bar'
+        },
+    ]
+    assert NestedReleaseAppDataProvider().get_filtered_list_data(pk='bar', domain_pk='stage') == expected_response
+
+
+@mock.patch.object(NestedReleaseAppDataProvider, '_get_raw_data')
+def test_nested_release_app_data_provider_filtered_list_data_no_result(mocked_get_raw_data):
+    mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
+    expected_response = []
+    assert NestedReleaseAppDataProvider().get_filtered_list_data(pk='test', domain_pk='stage') == expected_response
+
+
 @mock.patch.object(ReleaseAppDataProvider, '_get_raw_data')
 def test_release_app_data_provider(mocked_get_raw_data):
     mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
