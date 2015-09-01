@@ -17,6 +17,12 @@ class DataProvider(object):
         """
         raise NotImplementedError('The method _get_list_data must be implemented')
 
+    def get_filtered_list_data(self, pk, domain_pk):
+        """
+        Return a list of filtered objects
+        """
+        pass
+
     def get_retrieve_data(self, pk, domain_pk):
         """
         Return a single object, looked up by the passed pk
@@ -24,8 +30,8 @@ class DataProvider(object):
         raise NotImplementedError('The method get_retrieve_data must be implemented')
 
 
-class JsonDataProvider(DataProvider, JsonDataProviderRetrieveMixin):
-    pass
+class JsonDataProvider(JsonDataProviderRetrieveMixin, DataProvider):
+  pass
 
 
 class ServiceProvider(object):

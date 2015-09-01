@@ -36,7 +36,11 @@ class NestedReleaseAppDataProvider(ParentReleaseAppDataProvider):
                  'version': app['ver'],
                  'stage': self.extract_stage_from_env(app['env'])}
                 for app in self.raw_data]
-        return sorted(data, key=lambda x: x['name'], reverse=True)
+        return sorted(data, key=lambda x: x['name'])
+
+    def get_filtered_list_data(self, pk, domain_pk):
+        filtered_apps = filter(lambda x: x[domain_pk] == pk, self.list_data)
+        return sorted(filtered_apps, key=lambda x: x['name'])
 
     def to_models(self):
         ordered_data = sorted(self.raw_data, key=lambda x: x['ls'], reverse=True)
@@ -130,4 +134,4 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                 }
                 data.append(app_to_be_added)
                 apps_indexes[app_name] = len(data) - 1
-        return sorted(data, key=lambda x: x['name'], reverse=True)
+        return sorted(data, key=lambda x: x['name'])

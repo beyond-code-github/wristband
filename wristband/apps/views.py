@@ -11,6 +11,12 @@ class NestedAppViewSet(ReadOnlyViewSet):
     serializer_class = NestedAppSerializer
     data_provider_class = NestedReleaseAppDataProvider
 
+    def list(self, request, *args, **kwargs):
+        stage_pk = kwargs['stage_pk']
+        serializer = self.serializer_class(data=self._get_filtered_list_data(pk=stage_pk, lookup_key='stage'), many=True)
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.data)
+
 
 class AppViewSet(ReadOnlyViewSet):
     serializer_class = AppSerializer
