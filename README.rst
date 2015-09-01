@@ -68,6 +68,22 @@ First make sure to create and activate a virtualenv_, then open a terminal at th
 
     $ pip install -r requirements/local.txt
 
+Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
+file called `providers.yaml` in the `wristband/providers` directory containing information for the Jenkins service in
+the environment you are deploying to (ie. the target environment, not the source environment):
+
+    jenkins:
+      env1:
+        zone1:
+          uri: https://jenkins.env1.zone1/
+          job_name: deploy
+          username: foo
+          password: <jenkins api token>
+
+
+To finish preparation, run
+
+    $ manage.py import_apps
 
 Running
 ^^^^^^^
