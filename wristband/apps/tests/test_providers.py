@@ -89,7 +89,7 @@ def test_release_app_data_provider(mocked_get_raw_data):
         }
     ]
     provider_under_test = ReleaseAppDataProvider()
-    provider_under_test.not_expired_jobs = []
+    provider_under_test._not_expired_jobs = []
     assert ReleaseAppDataProvider().list_data == expected_response
 
 
@@ -105,6 +105,6 @@ def test_release_app_data_provider_get_last_job_id_per_app(app_name,
     with mock.patch.object(ReleaseAppDataProvider, '_get_raw_data') as mocked_get_raw_data:
         mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
         provider_under_test = ReleaseAppDataProvider()
-        provider_under_test.not_expired_jobs = [dummy_job_class(app=dummy_app_class('a-b-test', 'bar'), id='1234'), ]
+        provider_under_test._not_expired_jobs = [dummy_job_class(app=dummy_app_class('a-b-test', 'bar'), id='1234'), ]
 
         assert provider_under_test.get_last_job_id_per_app(app_name, stage) == expected_response

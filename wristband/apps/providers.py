@@ -51,11 +51,16 @@ class NestedReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
 
 class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
-    not_expired_jobs = Job.objects(start_time__gte=EXPIRY_JOB_TIME).ordered_by_time(desc=True) # this is a list!
+    _not_expired_jobs = None
+
+    def get_not_expired_jobs(self):
+        if self._not_expired_jobs is None:
+            self._not_expired_jobs = Job.objects(start_time__gte=EXPIRY_JOB_TIME).ordered_by_time(desc=True) # this is a list!
+        return self._not_expired_jobs
 
     def get_last_job_id_per_app(self, app_name, stage):
         try:
-            return filter(lambda x: x.app.name == app_name and x.app.stage == stage, self.not_expired_jobs)[0].id
+            return filter(lambda x: x.app.name == app_name and x.app.stage == stage, self.get_not_expired_jobs())[0].id
         except IndexError:
             return None
 
