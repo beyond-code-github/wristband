@@ -24,9 +24,20 @@ MOCK_RELEASE_APP_RESPONSE = [
     }
 ]
 
+@mock.patch('wristband.apps.providers.requests')
+def test_parent_release_app_provider_get_raw_data(mock_requests, settings):
+    """
+    Cannot test the parent class directly because some of the mandatory methods are not implemented
+    and the code raises an exception. The test is still called parent because it tests the parent method
+    """
+    test_url = 'http://test.com'
+    settings.RELEASES_APP_URI = test_url
+    provider_under_test = NestedReleaseAppDataProvider()
+    mock_requests.get.assert_called_once_with(test_url)
+
 
 @mock.patch.object(NestedReleaseAppDataProvider, '_get_raw_data')
-def test_nested_release_app_data_provider(mocked_get_raw_data):
+def test_nested_release_app_data_provider_list_data(mocked_get_raw_data):
     mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
     expected_response = [
         {
@@ -46,6 +57,29 @@ def test_nested_release_app_data_provider(mocked_get_raw_data):
         }
     ]
     assert NestedReleaseAppDataProvider().list_data == expected_response
+
+
+@mock.patch.object(NestedReleaseAppDataProvider, '_get_raw_data')
+def test_nested_release_app_data_provider_to_model(mocked_get_raw_data):
+    mocked_get_raw_data.return_value = MOCK_RELEASE_APP_RESPONSE
+    expected_response = [
+        {
+            'name': 'a-b-test',
+            'security_zone': 'left',
+            'stage': 'bar'
+        },
+        {
+            'name': 'a-b-test',
+            'security_zone': 'left',
+            'stage': 'foo'
+        },
+        {
+            'name': 'a-b-test',
+            'security_zone': 'left',
+            'stage': 'foo'
+        }
+    ]
+    assert NestedReleaseAppDataProvider().to_models() == expected_response
 
 
 @mock.patch.object(NestedReleaseAppDataProvider, '_get_raw_data')
