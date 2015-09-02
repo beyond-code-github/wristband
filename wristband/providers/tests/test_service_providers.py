@@ -70,9 +70,9 @@ def test_jenkins_provider_save_job_info_failure_case(mocked_get_jenkins_server_c
 @mock.patch('wristband.providers.service_providers.App')
 @mock.patch.object(JenkinsServiceProvider, 'get_jenkins_server_config')
 def test_jenkins_provider_status_not_building_case(mocked_get_jenkins_server_config,
-                                                     mocked_app_model,
-                                                     mocked_job_model,
-                                                     mocked_jenkins):
+                                                   mocked_app_model,
+                                                   mocked_job_model,
+                                                   mocked_jenkins):
     provider_under_test = JenkinsServiceProvider('foo', 'bar')
     mocked_get_jenkins_server_config.return_value = {'username': 'john',
                                                      'password': 'password',
@@ -93,9 +93,9 @@ def test_jenkins_provider_status_not_building_case(mocked_get_jenkins_server_con
 @mock.patch('wristband.providers.service_providers.App')
 @mock.patch.object(JenkinsServiceProvider, 'get_jenkins_server_config')
 def test_jenkins_provider_status_building_case(mocked_get_jenkins_server_config,
-                                                     mocked_app_model,
-                                                     mocked_job_model,
-                                                     mocked_jenkins):
+                                               mocked_app_model,
+                                               mocked_job_model,
+                                               mocked_jenkins):
     provider_under_test = JenkinsServiceProvider('foo', 'bar')
     mocked_get_jenkins_server_config.return_value = {'username': 'john',
                                                      'password': 'password',

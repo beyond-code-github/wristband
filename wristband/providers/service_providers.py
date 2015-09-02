@@ -3,7 +3,6 @@ from time import sleep
 import jenkins
 
 from . import providers_config
-
 from .generics import ServiceProvider
 from wristband.apps.models import App
 from wristband.providers.models import Job
@@ -57,7 +56,6 @@ class JenkinsServiceProvider(ServiceProvider):
                 sleep(1)  # prevents from bashing Jenkins too often
                 count += 1
             return None
-
 
     def status(self, job):
         build_info = self.server.get_build_info(self.job_name, job.provider_id)

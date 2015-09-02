@@ -162,15 +162,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ---------------------------------------------------------------------------------
 
 REST_FRAMEWORK = {
-    #'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-    #'DEFAULT_VERSION': 'v1',
+    # 'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    # 'DEFAULT_VERSION': 'v1',
 
 }
 
 # APP SPECIFIC SETTINGS
 
 RELEASES_APP_URI = env('RELEASES_APP_URI', default='http://example.com/apps')
-STAGES = env('STAGES',  default='qa,staging')
+STAGES = env('STAGES', default='qa,staging')
 
 # MONGO
 # -----
@@ -184,7 +184,7 @@ MONGO_CREDENTIALS = ''
 
 if MONGO_USER and MONGO_PASSWORD:
     MONGO_CREDENTIALS = '{username}:{password}@'.format(username=MONGO_USER,
-                                                  password=MONGO_PASSWORD)
+                                                        password=MONGO_PASSWORD)
 
 MONGO_URI = 'mongodb://{credentials}{host}:{port}/{db_name}'.format(
     credentials=MONGO_CREDENTIALS,
@@ -194,4 +194,3 @@ MONGO_URI = 'mongodb://{credentials}{host}:{port}/{db_name}'.format(
 )
 
 mongoengine.connect(MONGO_DBNAME, host=MONGO_URI)
-

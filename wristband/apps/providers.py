@@ -6,7 +6,7 @@ from wristband.common.utils import extract_stage, extract_security_zone_from_env
 from wristband.providers.generics import JsonDataProvider
 from wristband.providers.models import Job
 
-EXPIRY_JOB_TIME = datetime.datetime.now() - datetime.timedelta(minutes=10)
+EXPIRY_JOB_TIME_MINUTES = 10
 
 
 class ParentReleaseAppDataProvider(JsonDataProvider):
@@ -55,7 +55,8 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
     def get_not_expired_jobs(self):
         if self._not_expired_jobs is None:
-            self._not_expired_jobs = Job.objects(start_time__gte=EXPIRY_JOB_TIME).ordered_by_time(desc=True) # this is a list!
+            time_delta = datetime.datetime.now() - datetime.timedelta(minutes=EXPIRY_JOB_TIME_MINUTES)
+            self._not_expired_jobs = Job.objects(start_time__gte=time_delta).ordered_by_time(desc=True) # this is a list!
         return self._not_expired_jobs
 
     def get_last_job_id_per_app(self, app_name, stage):
