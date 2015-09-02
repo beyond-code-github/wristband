@@ -41,8 +41,17 @@ DJANGO_SECURE_FRAME_DENY                SECURE_FRAME_DENY           n/a         
 DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS   HSTS_INCLUDE_SUBDOMAINS     n/a                                            True
 DJANGO_SESSION_COOKIE_HTTPONLY          SESSION_COOKIE_HTTPONLY     n/a                                            True
 DJANGO_SESSION_COOKIE_SECURE            SESSION_COOKIE_SECURE       n/a                                            False
+MONGO_DB_NAME
 ======================================= =========================== ============================================== ======================================================================
 
+App specific environment variables
+
+======================================= =========================== ============================================== ======================================================================
+Environment Variable                    Django Setting              Development Default                            Production Default
+======================================= =========================== ============================================== ======================================================================
+STAGES                                  STAGES                      qa,staging                                     qa,staging
+RELEASES_APP_URI                        RELEASES_APP_URI            http://example.com/apps
+======================================= =========================== ============================================== ======================================================================
 
 Getting up and running
 ----------------------
@@ -59,6 +68,22 @@ First make sure to create and activate a virtualenv_, then open a terminal at th
 
     $ pip install -r requirements/local.txt
 
+Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
+file called `providers.yaml` in the `wristband/providers` directory containing information for the Jenkins service in
+the environment you are deploying to (ie. the target environment, not the source environment):
+
+    jenkins:
+      env1:
+        zone1:
+          uri: https://jenkins.env1.zone1/
+          job_name: deploy
+          username: foo
+          password: <jenkins api token>
+
+
+To finish preparation, run
+
+    $ manage.py import_apps
 
 Running
 ^^^^^^^

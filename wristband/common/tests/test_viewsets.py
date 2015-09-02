@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer, CharField
 
 from wristband.common.viewsets import ReadOnlyViewSet
-from wristband.common.providers import DataProvider
+from wristband.providers.generics import DataProvider
 
 EMPTY_REQUEST = {}
 PK = 'test'

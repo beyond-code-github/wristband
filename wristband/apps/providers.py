@@ -1,9 +1,12 @@
+import datetime
 import requests
 from django.conf import settings
 
-from wristband.common.utils import extract_stage
+from wristband.common.utils import extract_stage, extract_security_zone_from_env
+from wristband.providers.generics import JsonDataProvider
+from wristband.providers.models import Job
 
-from wristband.common.providers import JsonDataProvider
+EXPIRY_JOB_TIME_MINUTES = 10
 
 
 class ParentReleaseAppDataProvider(JsonDataProvider):
@@ -16,19 +19,52 @@ class ParentReleaseAppDataProvider(JsonDataProvider):
     def extract_stage_from_env(env):
         return extract_stage(env)
 
+    @staticmethod
+    def extract_security_zone_from_env(env):
+        return extract_security_zone_from_env(env)
+
+    def to_models(self):
+        pass
+
 
 class NestedReleaseAppDataProvider(ParentReleaseAppDataProvider):
     def _get_list_data(self):
         """
         Show only the latest version per stage, filter by last seen
         """
-        return [{'name': app['an'],
+        data = [{'name': app['an'],
                  'version': app['ver'],
                  'stage': self.extract_stage_from_env(app['env'])}
                 for app in self.raw_data]
+        return sorted(data, key=lambda x: x['name'])
+
+    def get_filtered_list_data(self, pk, domain_pk):
+        filtered_apps = filter(lambda x: x[domain_pk] == pk, self.list_data)
+        return sorted(filtered_apps, key=lambda x: x['name'])
+
+    def to_models(self):
+        ordered_data = sorted(self.raw_data, key=lambda x: x['ls'], reverse=True)
+        return [{'name': app['an'],
+                 'stage': self.extract_stage_from_env(app['env']),
+                 'security_zone': self.extract_security_zone_from_env(app['env'])}
+                for app in ordered_data]
 
 
 class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
+    _not_expired_jobs = None
+
+    def get_not_expired_jobs(self):
+        if self._not_expired_jobs is None:
+            time_delta = datetime.datetime.now() - datetime.timedelta(minutes=EXPIRY_JOB_TIME_MINUTES)
+            self._not_expired_jobs = Job.objects(start_time__gte=time_delta).ordered_by_time(desc=True) # this is a list!
+        return self._not_expired_jobs
+
+    def get_last_job_id_per_app(self, app_name, stage):
+        try:
+            return filter(lambda x: x.app.name == app_name and x.app.stage == stage, self.get_not_expired_jobs())[0].id
+        except IndexError:
+            return None
+
     def _get_list_data(self):
         """
         We need to get this format from the current releases app format
@@ -58,10 +94,12 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                         {
                            "name": "qa",
                            "version": "1.7.7"
+                           "job_id": "434532424"
                         },
                         {
                            "name": "staging",
                            "version": "1.7.2"
+                           "job_id": None
                         }
                     ]
             },
@@ -86,7 +124,8 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                     # we don't have this stage at all, just add it
                     data[already_seen_app_index]['stages'].append({
                         'name': app_stage,
-                        'version': app['ver']
+                        'version': app['ver'],
+                        'job_id': self.get_last_job_id_per_app(app_name, app_stage)
                     })
             else:
                 # this is the best case
@@ -95,9 +134,10 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                     'name': app_name,
                     'stages': [{
                         'name': app_stage,
-                        'version': app['ver']
+                        'version': app['ver'],
+                        'job_id': self.get_last_job_id_per_app(app_name, app_stage)
                     }]
                 }
                 data.append(app_to_be_added)
                 apps_indexes[app_name] = len(data) - 1
-        return sorted(data, key=lambda x: x['name'], reverse=True)
+        return sorted(data, key=lambda x: x['name'])

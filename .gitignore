@@ -32,6 +32,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+coverage.xml
 
 # Translations
 *.mo
@@ -54,3 +55,7 @@ node_modules/
 
 # virtual environments
 .env
+
+# Any YAML in config
+**/providers/*.yaml
+
