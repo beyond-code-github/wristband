@@ -21,7 +21,7 @@ stages_router.register(r'apps', NestedAppViewSet, base_name='apps')
 urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api/', include(stages_router.urls)),
-    url(r'^api/apps/(?P<app_name>.*)/stages/(?P<stage>.*)/(?P<version>.*)/', DeployAppView.as_view()),
+    url(r'^api/apps/(?P<app_name>.*)/stages/(?P<stage>.*)/version/(?P<version>.*)/', DeployAppView.as_view()),
     url(r'^docs/', include('rest_framework_swagger.urls'))
 
 
