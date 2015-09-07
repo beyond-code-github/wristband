@@ -50,11 +50,11 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE_CLASSES = (
-    # Make sure djangosecure.middleware.SecurityMiddleware is listed first
+    'djangosecure.middleware.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'wristband.authentication.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -196,14 +196,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # AUTHENTICATION
 # -----------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
+    'wristband.authentication.backends.SimpleMongoLDAPBackend',
 )
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 
-AUTH_LDAP_SERVER_URI = "ldap://ldap.forumsys.com"
+AUTH_LDAP_SERVER_URI = env('LDAP_URI')
+AUTH_LDAP_USER_DN_TEMPLATE = env('LDAP_USER_DN_TEMPLATE')
 
-AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,cn=read-only-admin,dc=example,dc=com"
+# REST FRAMEWORK SETTINGS
+# ------------------------------------------------------------------------------
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 
 # APP SPECIFIC SETTINGS
 # -----------------------------------------------------------------------------
