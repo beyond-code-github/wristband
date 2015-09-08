@@ -35,7 +35,6 @@ Environment Variable                    Django Setting              Development 
 DJANGO_DEBUG                            DEBUG                       True                                           False
 DJANGO_SECRET_KEY                       SECRET_KEY                  CHANGEME!!!                                    raises error
 DJANGO_SECURE_BROWSER_XSS_FILTER        SECURE_BROWSER_XSS_FILTER   n/a                                            True
-DJANGO_SECURE_SSL_REDIRECT              SECURE_SSL_REDIRECT         n/a                                            True
 DJANGO_SECURE_CONTENT_TYPE_NOSNIFF      SECURE_CONTENT_TYPE_NOSNIFF n/a                                            True
 DJANGO_SECURE_FRAME_DENY                SECURE_FRAME_DENY           n/a                                            True
 DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS   HSTS_INCLUDE_SUBDOMAINS     n/a                                            True
