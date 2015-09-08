@@ -7,7 +7,6 @@ from bson.objectid import ObjectId
 SESSION_KEY = '_auth_user_id'
 BACKEND_SESSION_KEY = '_auth_user_backend'
 HASH_SESSION_KEY = '_auth_user_hash'
-REDIRECT_FIELD_NAME = 'next'
 
 
 def _get_user_session_key(request):

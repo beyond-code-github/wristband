@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, logout
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 
 from wristband.authentication.utils import login
 
-
+@require_POST
 @csrf_exempt
 def login_view(request):
     username = request.POST['username']
@@ -20,7 +21,7 @@ def login_view(request):
     return JsonResponse(data=data, status=status)
 
 
-@csrf_exempt
+@require_GET
 def logout_view(request):
     logout(request)
     data = {'message': 'User logged out'}
