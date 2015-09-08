@@ -1,6 +1,6 @@
 import mock
 from ldap import INVALID_CREDENTIALS
-import py
+import pytest
 
 from wristband.authentication.backends import SimpleMongoLDAPBackend
 
