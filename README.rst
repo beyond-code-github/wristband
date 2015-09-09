@@ -50,6 +50,8 @@ Environment Variable                    Django Setting              Development 
 ======================================= =========================== ============================================== ======================================================================
 STAGES                                  STAGES                      qa,staging                                     qa,staging
 RELEASES_APP_URI                        RELEASES_APP_URI            http://example.com/apps
+LDAP_URI                                AUTH_LDAP_SERVER_URI        ldap://example.com                             n/a
+LDAP_USER_DN_TEMPLATE                   AUTH_LDAP_USER_DN_TEMPLATE  uid={user},dc=example,dc=com                   n/a
 ======================================= =========================== ============================================== ======================================================================
 
 Getting up and running

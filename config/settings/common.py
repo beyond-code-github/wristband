@@ -32,6 +32,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework_swagger',
+    'mongoengine.django.mongo_auth'
 )
 
 # Apps specific for this project go here.
@@ -47,11 +48,11 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIDDLEWARE CONFIGURATION
 # ------------------------------------------------------------------------------
 MIDDLEWARE_CLASSES = (
-    # Make sure djangosecure.middleware.SecurityMiddleware is listed first
+    'djangosecure.middleware.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'wristband.authentication.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -70,7 +71,39 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # DATABASE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.dummy'
+    }
+}
+
+# MONGO
+# -----------------------------------------------------------------------------
+
+MONGO_DBNAME = env('MONGO_DB_NAME', default='wristband')
+MONGO_USER = env('MONGODB_USER', default='')
+MONGO_PASSWORD = env('MONGODB_PASSWORD', default='')
+MONGO_HOST = env('MONGODB_HOST', default='localhost')
+MONGO_PORT = env('MONGODB_PORT', default='27017')
+MONGO_CREDENTIALS = ''
+
+if MONGO_USER and MONGO_PASSWORD:
+    MONGO_CREDENTIALS = '{username}:{password}@'.format(username=MONGO_USER,
+                                                        password=MONGO_PASSWORD)
+
+MONGO_URI = 'mongodb://{credentials}{host}:{port}/{db_name}'.format(
+    credentials=MONGO_CREDENTIALS,
+    host=MONGO_HOST,
+    db_name=MONGO_DBNAME,
+    port=MONGO_PORT
+)
+
+mongoengine.connect(MONGO_DBNAME, host=MONGO_URI)
+
+# SESSION
+# ------------------------------------------------------------------------------
+SESSION_ENGINE = 'mongoengine.django.sessions'
+SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
 
 # GENERAL CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -158,39 +191,33 @@ ROOT_URLCONF = 'config.urls'
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# REST FRAMEWORK
-# ---------------------------------------------------------------------------------
+# AUTHENTICATION
+# -----------------------------------------------------------------------------
+AUTHENTICATION_BACKENDS = (
+    'wristband.authentication.backends.SimpleMongoLDAPBackend',
+)
+
+AUTH_USER_MODEL = 'mongo_auth.MongoUser'
+
+AUTH_LDAP_SERVER_URI = env('LDAP_URI', default='ldap://example.com')
+AUTH_LDAP_USER_DN_TEMPLATE = env('LDAP_USER_DN_TEMPLATE', default='uid={user},dc=example,dc=com')
+
+# REST FRAMEWORK SETTINGS
+# ------------------------------------------------------------------------------
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-    # 'DEFAULT_VERSION': 'v1',
-
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
 }
 
 # APP SPECIFIC SETTINGS
+# -----------------------------------------------------------------------------
 
 RELEASES_APP_URI = env('RELEASES_APP_URI', default='http://example.com/apps')
 STAGES = env('STAGES', default='qa,staging')
 
-# MONGO
-# -----
 
-MONGO_DBNAME = env('MONGO_DB_NAME', default='wristband')
-MONGO_USER = env('MONGODB_USER', default='')
-MONGO_PASSWORD = env('MONGODB_PASSWORD', default='')
-MONGO_HOST = env('MONGODB_HOST', default='localhost')
-MONGO_PORT = env('MONGODB_PORT', default='27017')
-MONGO_CREDENTIALS = ''
-
-if MONGO_USER and MONGO_PASSWORD:
-    MONGO_CREDENTIALS = '{username}:{password}@'.format(username=MONGO_USER,
-                                                        password=MONGO_PASSWORD)
-
-MONGO_URI = 'mongodb://{credentials}{host}:{port}/{db_name}'.format(
-    credentials=MONGO_CREDENTIALS,
-    host=MONGO_HOST,
-    db_name=MONGO_DBNAME,
-    port=MONGO_PORT
-)
-
-mongoengine.connect(MONGO_DBNAME, host=MONGO_URI)
