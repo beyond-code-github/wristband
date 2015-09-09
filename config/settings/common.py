@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 from __future__ import absolute_import, unicode_literals
+from django.core.exceptions import ImproperlyConfigured
 
 import environ
 import mongoengine
@@ -220,4 +221,7 @@ REST_FRAMEWORK = {
 RELEASES_APP_URI = env('RELEASES_APP_URI', default='http://example.com/apps')
 STAGES = env('STAGES', default='qa,staging')
 
-
+try:
+    PROVIDER_CONFIG = env('PROVIDER_CONFIG')
+except ImproperlyConfigured:
+    PROVIDER_CONFIG = 'providers.yaml'
