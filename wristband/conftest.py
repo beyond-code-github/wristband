@@ -16,7 +16,8 @@ class DummyJob(object):
 
 
 class DummyUser(object):
-    def __init__(self, username):
+    def __init__(self, username, pk=1):
+        self.pk = self.id = pk
         self.username = username
 
 

@@ -9,7 +9,7 @@ BACKEND_SESSION_KEY = '_auth_user_backend'
 HASH_SESSION_KEY = '_auth_user_hash'
 
 
-def _get_user_session_key(request):
+def get_user_session_key(request):
     # This value in the session is always serialized to a string, so we need
     # to convert it back to Python whenever we access it.
     if SESSION_KEY in request.session:
@@ -21,6 +21,10 @@ def login(request, user):
     Persist a user id and a backend in the request. This way a user doesn't
     have to reauthenticate on every request. Note that data set during
     the anonymous session is retained when the user logs in.
+
+
+    This a copy of the django implementation, it's just using str(user.pk) instead of
+    user._meta.pk becase the Mongo models don't have _meta as a class instance
     """
     session_auth_hash = ''
     if user is None:
@@ -29,7 +33,7 @@ def login(request, user):
         session_auth_hash = user.get_session_auth_hash()
 
     if SESSION_KEY in request.session:
-        if _get_user_session_key(request) != user.pk or (
+        if get_user_session_key(request) != user.pk or (
                     session_auth_hash and
                         request.session.get(HASH_SESSION_KEY) != session_auth_hash):
             # To avoid reusing another user's session, create a new, empty
