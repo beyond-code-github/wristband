@@ -1,0 +1,2 @@
+https://github.com/tommyvn/heroku-buildpack-apt.git#aggressive-paths
+https://github.com/tommyvn/heroku-buildpack-python.git#preserve-ORIG_BUILD_DIR
