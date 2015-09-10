@@ -81,7 +81,7 @@ DATABASES = {
 # MONGO
 # -----------------------------------------------------------------------------
 
-MONGO_DBNAME = env('MONGO_DB_NAME', default='wristband')
+MONGO_DB_NAME = env('MONGO_DB_NAME', default='wristband')
 MONGO_USER = env('MONGODB_USER', default='')
 MONGO_PASSWORD = env('MONGODB_PASSWORD', default='')
 MONGO_HOST = env('MONGODB_HOST', default='localhost')
@@ -92,14 +92,14 @@ if MONGO_USER and MONGO_PASSWORD:
     MONGO_CREDENTIALS = '{username}:{password}@'.format(username=MONGO_USER,
                                                         password=MONGO_PASSWORD)
 
-MONGO_URI = 'mongodb://{credentials}{host}:{port}/{db_name}'.format(
+MONGO_URI = env('MONGO_URI', default='mongodb://{credentials}{host}:{port}/{db_name}'.format(
     credentials=MONGO_CREDENTIALS,
     host=MONGO_HOST,
-    db_name=MONGO_DBNAME,
+    db_name=MONGO_DB_NAME,
     port=MONGO_PORT
-)
+))
 
-mongoengine.connect(MONGO_DBNAME, host=MONGO_URI)
+mongoengine.connect(MONGO_DB_NAME, host=MONGO_URI)
 
 # SESSION
 # ------------------------------------------------------------------------------
