@@ -33,6 +33,10 @@ class DataProvider(object):
 class JsonDataProvider(JsonDataProviderRetrieveMixin, DataProvider):
   pass
 
+class DeployException(Exception):
+    '''Generic exception type for deployments of arbitrary provider.'''
+    pass
+
 
 class ServiceProvider(object):
     config = None

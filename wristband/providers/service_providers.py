@@ -4,7 +4,7 @@ import logging
 import jenkins
 
 from . import providers_config
-from .generics import ServiceProvider
+from .generics import ServiceProvider, DeployException
 from wristband.apps.models import App
 from wristband.providers.models import Job
 
@@ -31,7 +31,10 @@ class JenkinsServiceProvider(ServiceProvider):
             "APP": self.app.name,
             "APP_BUILD_NUMBER": version
         }
-        self.server.build_job(self.job_name, parameters=params)
+        try:
+            self.server.build_job(self.job_name, parameters=params)
+        except jenkins.JenkinsException as e:
+            raise DeployException(e.message)
         return self.save_job_info(version)
 
     def save_job_info(self, version):
