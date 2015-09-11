@@ -200,8 +200,9 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 
-AUTH_LDAP_SERVER_URI = env('LDAP_URI', default='ldap://example.com')
-AUTH_LDAP_USER_DN_TEMPLATE = env('LDAP_USER_DN_TEMPLATE', default='uid={user},dc=example,dc=com')
+AUTH_LDAP_SERVER_URI = env('AUTH_LDAP_SERVER_URI', default='')
+AUTH_LDAP_USER_DN_TEMPLATE = env('AUTH_LDAP_USER_DN_TEMPLATE', default='')
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = env('AUTH_LDAP_BIND_AS_AUTHENTICATING_USER', default=False)
 
 # REST FRAMEWORK SETTINGS
 # ------------------------------------------------------------------------------

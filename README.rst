@@ -29,30 +29,31 @@ It has been deployed successfully with both Gunicorn/Nginx and even uWSGI/Nginx.
 
 For configuration purposes, the following table maps the 'wristband' environment variables to their Django setting:
 
-======================================= =========================== ============================================== ======================================================================
-Environment Variable                    Django Setting              Development Default                            Production Default
-======================================= =========================== ============================================== ======================================================================
-DJANGO_DEBUG                            DEBUG                       True                                           False
-DJANGO_SECRET_KEY                       SECRET_KEY                  CHANGEME!!!                                    raises error
-DJANGO_SECURE_BROWSER_XSS_FILTER        SECURE_BROWSER_XSS_FILTER   n/a                                            True
-DJANGO_SECURE_CONTENT_TYPE_NOSNIFF      SECURE_CONTENT_TYPE_NOSNIFF n/a                                            True
-DJANGO_SECURE_FRAME_DENY                SECURE_FRAME_DENY           n/a                                            True
-DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS   HSTS_INCLUDE_SUBDOMAINS     n/a                                            True
-DJANGO_SESSION_COOKIE_HTTPONLY          SESSION_COOKIE_HTTPONLY     n/a                                            True
-DJANGO_SESSION_COOKIE_SECURE            SESSION_COOKIE_SECURE       n/a                                            False
+===================================== =========================== =================== ==================
+Environment Variable                  Django Setting              Development Default Production Default
+===================================== =========================== =================== ==================
+DJANGO_DEBUG                          DEBUG                       True                False
+DJANGO_SECRET_KEY                     SECRET_KEY                  CHANGEME!!!         raises error
+DJANGO_SECURE_BROWSER_XSS_FILTER      SECURE_BROWSER_XSS_FILTER   n/a                 True
+DJANGO_SECURE_CONTENT_TYPE_NOSNIFF    SECURE_CONTENT_TYPE_NOSNIFF n/a                 True
+DJANGO_SECURE_FRAME_DENY              SECURE_FRAME_DENY           n/a                 True
+DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS HSTS_INCLUDE_SUBDOMAINS     n/a                 True
+DJANGO_SESSION_COOKIE_HTTPONLY        SESSION_COOKIE_HTTPONLY     n/a                 True
+DJANGO_SESSION_COOKIE_SECURE          SESSION_COOKIE_SECURE       n/a                 False
 MONGO_DB_NAME
-======================================= =========================== ============================================== ======================================================================
+===================================== =========================== =================== ==================
 
 App specific environment variables
 
-======================================= =========================== ============================================== ======================================================================
-Environment Variable                    Django Setting              Development Default                            Production Default
-======================================= =========================== ============================================== ======================================================================
-STAGES                                  STAGES                      qa,staging                                     qa,staging
-RELEASES_APP_URI                        RELEASES_APP_URI            http://example.com/apps
-LDAP_URI                                AUTH_LDAP_SERVER_URI        ldap://example.com                             n/a
-LDAP_USER_DN_TEMPLATE                   AUTH_LDAP_USER_DN_TEMPLATE  uid={user},dc=example,dc=com                   n/a
-======================================= =========================== ============================================== ======================================================================
+===================================== ===================================== ======================= ==================
+Environment Variable                  Django Setting                        Development Default     Production Default
+===================================== ===================================== ======================= ==================
+STAGES                                STAGES                                qa,staging              qa,staging
+RELEASES_APP_URI                      RELEASES_APP_URI                      http://example.com/apps
+AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI
+AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER False                     False
+===================================== ===================================== ======================= ==================
 
 Getting up and running
 ----------------------
