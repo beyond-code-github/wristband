@@ -16,3 +16,9 @@ TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 # Note: This key only used for development and testing.
 SECRET_KEY = env("DJANGO_SECRET_KEY", default='CHANGEME!!!')
+
+# AUTHENTICATION
+# --------------
+AUTH_LDAP_SERVER_URI = ''
+AUTH_LDAP_USER_DN_TEMPLATE = ''
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = False

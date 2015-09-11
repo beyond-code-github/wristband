@@ -50,9 +50,9 @@ Environment Variable                  Django Setting                        Deve
 ===================================== ===================================== ======================= ==================
 STAGES                                STAGES                                qa,staging              qa,staging
 RELEASES_APP_URI                      RELEASES_APP_URI                      http://example.com/apps
-AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI
-AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER False                     False
+AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  n/a                     n/a
+AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE            n/a                     n/a
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER n/a                     n/a
 ===================================== ===================================== ======================= ==================
 
 Getting up and running
