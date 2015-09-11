@@ -25,3 +25,6 @@ python-jenkins==0.4.8
 
 # auth
 django-auth-ldap==1.2.6
+
+# logs
+logstash-formatter==0.5.14
