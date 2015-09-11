@@ -1,4 +1,5 @@
 from time import sleep
+import logging
 
 import jenkins
 
@@ -9,8 +10,11 @@ from wristband.providers.models import Job
 
 JENKINS_CALL_SAFE_LIMIT = 8
 
+logger = logging.getLogger('wristband.provider')
+
 
 class JenkinsServiceProvider(ServiceProvider):
+
     def __init__(self, app_name, stage):
         self.app = App.objects.get(name=app_name, stage=stage)
         config = self.get_jenkins_server_config()
@@ -33,6 +37,7 @@ class JenkinsServiceProvider(ServiceProvider):
     def save_job_info(self, version):
         potential_build_id = self.server.get_job_info(self.job_name)['nextBuildNumber']
         count = 0
+        job = None
         while count <= JENKINS_CALL_SAFE_LIMIT:
             try:
                 # Jenkins API don't return the job id when a job is posted, it's a known bug.
@@ -46,16 +51,19 @@ class JenkinsServiceProvider(ServiceProvider):
                 # If not, we're screwed. Although this feels quite safe, job number clashing will occur only when two
                 # users click the deploy button exactly at the same time.
                 build_info = self.server.get_build_info(self.job_name, potential_build_id)
-                version_param_dictionary = filter(lambda x: x['name'] == 'APP_BUILD_NUMBER', build_info['actions'][0]['parameters'])[0]
+                version_param_dictionary = \
+                filter(lambda x: x['name'] == 'APP_BUILD_NUMBER', build_info['actions'][0]['parameters'])[0]
                 version_to_check = version_param_dictionary['value']
                 if version_to_check == version:
                     job = Job(app=self.app, provider_name='jenkins', provider_id=potential_build_id)
                     job.save()
-                    return str(job.id)
+                    logger.info('Job started for {app} with job ID {job_id}'.format(app=self.app.name, job_id=job.id))
             except jenkins.NotFoundException:
                 sleep(1)  # prevents from bashing Jenkins too often
                 count += 1
-            return None
+            if not job:
+                logger.warning('Job for {app} not started on Jenkins'.format(app=self.app.name))
+            return job.id if job else None
 
     def status(self, job):
         build_info = self.server.get_build_info(self.job_name, job.provider_id)

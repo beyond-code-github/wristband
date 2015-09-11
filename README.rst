@@ -45,6 +45,7 @@ MONGO_DB_NAME
 
 App specific environment variables
 
+
 ===================================== ===================================== ======================= ==================
 Environment Variable                  Django Setting                        Development Default     Production Default
 ===================================== ===================================== ======================= ==================
@@ -53,7 +54,9 @@ RELEASES_APP_URI                      RELEASES_APP_URI                      http
 AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  n/a                     n/a
 AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE            n/a                     n/a
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER n/a                     n/a
+DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG
 ===================================== ===================================== ======================= ==================
+
 
 Getting up and running
 ----------------------

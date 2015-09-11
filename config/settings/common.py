@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 from __future__ import absolute_import, unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 
+import sys
 import environ
 import mongoengine
 
@@ -192,6 +193,57 @@ ROOT_URLCONF = 'config.urls'
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# LOGGING CONFIGURATION
+# ------------------------------------------------------------------------------
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
+# A sample logging configuration. The only tangible logging
+# performed by this configuration is to send an email to
+# the site admins on every HTTP 500 error when DEBUG=False.
+# See http://docs.djangoproject.com/en/dev/topics/logging for
+# more details on how to customize your logging configuration.
+
+LOG_LEVEL = env('DJANGO_LOG_LEVEL', default='DEBUG')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'logstash': {
+            '()': 'logstash_formatter.LogstashFormatter',
+            'format': '{"extra":{"app": "wristband"}}'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'logstash',
+            'stream': sys.stdout
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': True
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+        },
+        'wristband.authentication': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': True
+        },
+        'wristband.provider': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': True
+        }
+    }
+}
+
 # AUTHENTICATION
 # -----------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
@@ -218,7 +270,6 @@ REST_FRAMEWORK = {
 RELEASES_APP_URI = env('RELEASES_APP_URI', default='http://example.com/apps')
 STAGES = env('STAGES', default='qa,staging')
 
-try:
-    PROVIDER_CONFIG = env('PROVIDER_CONFIG')
-except ImproperlyConfigured:
-    PROVIDER_CONFIG = 'providers.yaml'
+
+PROVIDER_CONFIG = env('PROVIDER_CONFIG', default='providers.yaml')
+
