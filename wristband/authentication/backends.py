@@ -1,9 +1,12 @@
+import logging
+
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from mongoengine import DoesNotExist
 from mongoengine.django.mongo_auth.models import get_user_document
 import ldap
 
+logger = logging.getLogger('wristband.authentication')
 
 class SimpleMongoLDAPBackend(object):
     """
@@ -33,8 +36,12 @@ class SimpleMongoLDAPBackend(object):
         try:
             ldap_client.simple_bind_s(user_dn, password)
             user, created = self.get_or_create_user(username)
+            logger.info('User {username} successfully logged in'.format(username=username))
         except ldap.INVALID_CREDENTIALS:
-            pass
+            logger.info('User {username} not logged in, invalid credentials'.format(username=username))
+        except ldap.LDAPError, e:
+            # logs any other ldap error as error
+            logger.error(e)
         finally:
             ldap_client.unbind()
         return user

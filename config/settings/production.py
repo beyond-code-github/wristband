@@ -7,8 +7,6 @@ Production Configurations
 '''
 from __future__ import absolute_import, unicode_literals
 
-
-
 from .common import *  # noqa
 
 # SECRET CONFIGURATION
@@ -20,7 +18,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # django-secure
 # ------------------------------------------------------------------------------
-INSTALLED_APPS += ("djangosecure", )
+INSTALLED_APPS += ("djangosecure",)
 
 SECURITY_MIDDLEWARE = (
     'djangosecure.middleware.SecurityMiddleware',
@@ -53,4 +51,6 @@ SESSION_COOKIE_HTTPONLY = True
 ALLOWED_HOSTS = ["*"]
 # END SITE CONFIGURATION
 
+
 INSTALLED_APPS += ("gunicorn", )
+
