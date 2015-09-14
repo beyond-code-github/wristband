@@ -17,7 +17,7 @@ def login_view(request):
         status = 200
     else:
         data = {'message': 'Invalid credential details'}
-        status = 403 #forbidden
+        status = 401 #forbidden
     return JsonResponse(data=data, status=status)
 
 
