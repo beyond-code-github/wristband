@@ -25,3 +25,18 @@ def test_ldap_successful_authentication(mocked_ldap, mock_get_or_create_user, du
     backend = SimpleMongoLDAPBackend()
     assert backend.authenticate('test_user', 'password') == dummy_user
     mocked_ldap.initialize().unbind.assert_called_with()
+
+
+@mock.patch('wristband.authentication.backends.ldap')
+def test_logging_ldap_failed_authentication(mocked_ldap):
+    pass
+
+
+@mock.patch('wristband.authentication.backends.ldap')
+def test_logging_ldap_successful_authentication(mocked_ldap):
+    pass
+
+
+@mock.patch('wristband.authentication.backends.ldap')
+def test_logging_ldap_server_error(mocked_ldap):
+    pass
