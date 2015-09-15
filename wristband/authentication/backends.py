@@ -14,6 +14,8 @@ class SimpleMongoLDAPBackend(object):
     """
     user_document = get_user_document()
 
+    LDAP_TIMEOUT = 10
+
     def get_user(self, user_id):
         try:
             return self.user_document.objects.get(username=user_id)
@@ -32,6 +34,10 @@ class SimpleMongoLDAPBackend(object):
         user = None
         user_dn = settings.AUTH_LDAP_USER_DN_TEMPLATE.format(user=username)
         ldap_uri = settings.AUTH_LDAP_SERVER_URI
+        ldap.set_option(ldap.OPT_NETWORK_TIMEOUT, self.LDAP_TIMEOUT)
+        # Required when using self-signed certs
+        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
+        ldap.set_option(ldap.OPT_DEBUG_LEVEL, 255)
         ldap_client = ldap.initialize(ldap_uri)
         try:
             ldap_client.simple_bind_s(user_dn, password)
