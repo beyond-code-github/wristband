@@ -26,7 +26,7 @@ def test_login_view_bad_credential(mocked_authenticate, rf):
     request = rf.post(url, {'username': 'test_user', 'password': 'password'})
     response = login_view(request)
     mocked_authenticate.assert_called_with(username='test_user', password='password')
-    assert 'message' in response.content
+    assert 'details' in response.content
     assert isinstance(response, JsonResponse)
     assert response.status_code == 401
 
