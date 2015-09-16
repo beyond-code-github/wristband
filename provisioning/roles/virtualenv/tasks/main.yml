@@ -1,7 +1,7 @@
 ---
 - name: Install required PIP packages inside the virtualenv
   sudo: false
-  pip: requirements=/vagrant/requirements/test.txt virtualenv={{ virtualenv_path }}
+  pip: requirements=/vagrant/requirements/local.txt virtualenv={{ virtualenv_path }}
 
 - name: Alter bashrc to automatically enter virtualenv at login
   sudo: false
