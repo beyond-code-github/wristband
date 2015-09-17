@@ -21,8 +21,39 @@ A REST API for the Wristband deployment service.
 
 It speaks HTTP and JSON and executes actions defined by you. It is designed to work with `wristband-frontend <https://github.com/hmrc/wristband-frontend>`_, but will work fine without it.
 
+
+Getting up and running
+----------------------
+
+Basics
+^^^^^^
+
+The steps below will get you up and running with a local development environment. We assume you have the following installed:
+
+* pip
+* virtualenv
+
+First make sure to create and activate a virtualenv_, then open a terminal at the project root and install the requirements for local development::
+
+    $ pip install -r requirements/local.txt
+
+
+Alternatively you can also use Vagrant and Ansible to get an up and running. We assume you have the following installed:
+
+ * Vagrant
+ * Ansible
+
+Install Ansible roles:
+
+    $ ansible-galaxy install -r requirements.yml
+
+Then provision and spin up the Vagrant VM:
+
+    $ vagrant up
+
+
 Settings
-------------
+^^^^^^^^
 
 Wristband relies extensively on environment settings which **will not work with Apache/mod_wsgi setups**.
 It has been deployed successfully with both Gunicorn/Nginx and even uWSGI/Nginx.
@@ -58,21 +89,6 @@ DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBU
 ===================================== ===================================== ======================= ==================
 
 
-Getting up and running
-----------------------
-
-Basics
-^^^^^^
-
-The steps below will get you up and running with a local development environment. We assume you have the following installed:
-
-* pip
-* virtualenv
-
-First make sure to create and activate a virtualenv_, then open a terminal at the project root and install the requirements for local development::
-
-    $ pip install -r requirements/local.txt
-
 Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
 file called `providers.yaml` in the `wristband/providers` directory containing information for the Jenkins service in
 the environment you are deploying to (ie. the target environment, not the source environment):
@@ -93,7 +109,10 @@ To finish preparation, run
 Running
 ^^^^^^^
 
-     $ manage.py runserver
+     $ ./manage.py runserver_plus 0.0.0.0:8000
+
+
+If using the ldap server in the VM the login credentials are: Manager/password
 
 
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/

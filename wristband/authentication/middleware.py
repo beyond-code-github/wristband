@@ -6,6 +6,7 @@ from mongoengine.django.auth import get_user
 from .utils import get_user_session_key
 
 
+
 class AuthenticationMiddleware(object):
     def process_request(self, request):
         assert hasattr(request, 'session'), (

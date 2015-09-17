@@ -1,0 +1,18 @@
+---
+- name: Install required PIP packages inside the virtualenv
+  sudo: false
+  pip: requirements=/vagrant/requirements/local.txt virtualenv={{virtualenv_path}}
+
+
+- name: Alter bashrc to automatically enter virtualenv at login
+  lineinfile:
+    dest=/home/vagrant/.bashrc
+    line="source {{virtualenv_binaries}}/activate"
+    owner=vagrant
+
+
+- name: Go to the project home if ssh into vagrant
+  lineinfile:
+    dest=/home/vagrant/.bashrc
+    line="cd {{project_folder}}"
+    owner=vagrant
