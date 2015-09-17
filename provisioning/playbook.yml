@@ -16,4 +16,4 @@
       openldap_server_state: GB
       openldap_server_location: London
       openldap_server_organization: IT
-    - role: angstwad.docker_ubuntu
+    - configuration

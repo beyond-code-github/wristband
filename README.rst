@@ -109,7 +109,10 @@ To finish preparation, run
 Running
 ^^^^^^^
 
-     $ manage.py runserver
+     $ ./manage.py runserver_plus 0.0.0.0:8000
+
+
+If using the ldap server in the VM the login credentials are: Manager/password
 
 
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/

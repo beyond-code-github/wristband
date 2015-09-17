@@ -1,0 +1,9 @@
+---
+- name: Add environment variables
+  lineinfile:
+    dest=/home/vagrant/.bashrc
+    line="export {{item.variable}}='{{item.value}}'"
+    owner=vagrant
+  with_items:
+    - {variable: 'AUTH_LDAP_USER_DN_TEMPLATE', value: 'cn={user},dc=example,dc=com'}
+    - {variable: 'AUTH_LDAP_SERVER_URI', value: 'ldaps://localhost'}

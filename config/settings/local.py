@@ -38,6 +38,10 @@ DEBUG_TOOLBAR_CONFIG = {
 # django-extensions
 # ------------------------------------------------------------------------------
 INSTALLED_APPS += ('django_extensions', )
+
+# AUTHENTICATION
+# --------------
 AUTH_LDAP_SERVER_URI = env('AUTH_LDAP_SERVER_URI')
 AUTH_LDAP_USER_DN_TEMPLATE = env('AUTH_LDAP_USER_DN_TEMPLATE')
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = env('AUTH_LDAP_BIND_AS_AUTHENTICATING_USER', default=True)
+
