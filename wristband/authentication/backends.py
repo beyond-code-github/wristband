@@ -33,6 +33,7 @@ class SimpleMongoLDAPBackend(object):
     def authenticate(self, username=None, password=None):
         user = None
         user_dn = settings.AUTH_LDAP_USER_DN_TEMPLATE.format(user=username)
+        formatted_dn = ldap.dn.str2dn(user_dn, ldap.DN_FORMAT_LDAPV2)
         ldap_uri = settings.AUTH_LDAP_SERVER_URI
         ldap.set_option(ldap.OPT_NETWORK_TIMEOUT, self.LDAP_TIMEOUT)
         # Required when using self-signed certs
@@ -40,7 +41,7 @@ class SimpleMongoLDAPBackend(object):
         ldap.set_option(ldap.OPT_DEBUG_LEVEL, 255)
         ldap_client = ldap.initialize(ldap_uri)
         try:
-            ldap_client.simple_bind_s(user_dn, password)
+            ldap_client.simple_bind_s(formatted_dn, password)
             user, created = self.get_or_create_user(username)
             logger.info('User {username} successfully logged in'.format(username=username))
         except ldap.INVALID_CREDENTIALS:
