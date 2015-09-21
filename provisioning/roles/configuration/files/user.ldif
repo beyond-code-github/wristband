@@ -1,6 +1,7 @@
 # User account
 dn: uid=mars,ou=users,dc=example,dc=com
 cn: mars
+givenName: Mars
 sn: Mars
 uid: mars
 uidNumber: 10000
@@ -13,4 +14,4 @@ objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
 loginShell: /bin/bash
-userPassword: password
+userPassword: {CRYPT}*
