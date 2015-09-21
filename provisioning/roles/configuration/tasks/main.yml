@@ -19,4 +19,4 @@
   command: ldappasswd -x -w password -D cn=Manager,dc=example,dc=com -s password uid=mars,ou=users,dc=example,dc=com
 
 - name: Add user mars to group planets
-  command: ldapmodify -x -w password -D "cn=mars,dc=example,dc=com" -f add_user_to_group.ldif
+  command: ldapmodify -x -w password -D "cn=Manager,dc=example,dc=com" -f /vagrant/provisioning/roles/configuration/files/add_user_to_group.ldif

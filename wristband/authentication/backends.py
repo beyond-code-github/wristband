@@ -51,3 +51,5 @@ class SimpleMongoLDAPBackend(object):
         finally:
             ldap_client.unbind()
         return user
+
+
