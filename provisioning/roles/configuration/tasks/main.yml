@@ -5,5 +5,18 @@
     line="export {{item.variable}}='{{item.value}}'"
     owner=vagrant
   with_items:
-    - {variable: 'AUTH_LDAP_USER_DN_TEMPLATE', value: 'cn={user},dc=example,dc=com'}
+    - {variable: 'AUTH_LDAP_USER_DN_TEMPLATE', value: 'cn={user},ou=groups,dc=example,dc=com'}
     - {variable: 'AUTH_LDAP_SERVER_URI', value: 'ldaps://localhost'}
+
+- name: Add ou, group and user to LDAP
+  command: /usr/bin/ldapadd -x -w password -D cn=Manager,dc=example,dc=com -f /vagrant/provisioning/roles/configuration/files/{{ item }}.ldif
+  with_items:
+    - ou
+    - group
+    - user
+
+- name: Set user mars password
+  command: ldappasswd -x -w password -D cn=Manager,dc=example,dc=com -s password uid=mars,ou=users,dc=example,dc=com
+
+- name: Add user mars to group planets
+  command: ldapmodify -x -w password -D "cn=mars,dc=example,dc=com" -f add_user_to_group.ldif
