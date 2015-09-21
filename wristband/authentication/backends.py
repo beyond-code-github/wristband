@@ -1,55 +1,89 @@
 import logging
-
 from django.contrib.auth.hashers import make_password
-from django.conf import settings
-from mongoengine import DoesNotExist
+
 from mongoengine.django.mongo_auth.models import get_user_document
-import ldap
+from django_auth_ldap.backend import LDAPBackend, _LDAPUser, populate_user
 
 logger = logging.getLogger('wristband.authentication')
 
-class SimpleMongoLDAPBackend(object):
+
+class LDAPUser(_LDAPUser):
     """
-    https://docs.djangoproject.com/en/1.4/topics/auth/#authentication-backends
+    The user model provided by Mongo Engine doesn't have the set_unusable_password method
+    we need to override the method below to handle this
     """
-    user_document = get_user_document()
+    def _get_or_create_user(self, force_populate=False):
+        """
+        Loads the User model object from the database or creates it if it
+        doesn't exist. Also populates the fields, subject to
+        AUTH_LDAP_ALWAYS_UPDATE_USER.
+        """
+        save_user = False
 
-    LDAP_TIMEOUT = 10
+        username = self.backend.ldap_to_django_username(self._username)
+        self._user, created = self.backend.get_or_create_user(username, self)
+        self._user.ldap_user = self
+        self._user.ldap_username = self._username
 
-    def get_user(self, user_id):
-        try:
-            return self.user_document.objects.get(username=user_id)
-        except DoesNotExist:
-            return None
+        should_populate = force_populate or self.settings.ALWAYS_UPDATE_USER or created
 
-    def get_or_create_user(self, username):
+        if created:
+            logger.debug("Created Django user %s", username)
+            save_user = True
+
+        if should_populate:
+            logger.debug("Populating Django user %s", username)
+            self._populate_user()
+            save_user = True
+
+        if self.settings.MIRROR_GROUPS:
+            self._mirror_groups()
+
+        # Give the client a chance to finish populating the user just before
+        # saving.
+        if should_populate:
+            signal_responses = populate_user.send(self.backend.__class__, user=self._user, ldap_user=self)
+            if len(signal_responses) > 0:
+                save_user = True
+
+        if save_user:
+            self._user.save()
+
+        # We populate the profile after the user model is saved to give the
+        # client a chance to create the profile. Custom user models in Django
+        # 1.5 probably won't have a get_profile method.
+        if should_populate and self._should_populate_profile():
+            self._populate_and_save_user_profile()
+
+
+class SimpleMongoLDAPBackend(LDAPBackend):
+    """
+    Need to slightly modify the default one to work with Mongoengine
+    """
+    def get_user_model(self):
+        return get_user_document()
+
+    def get_or_create_user(self, username, ldap_user):
+        """
+        This must return a (User, created) 2-tuple for the given LDAP user.
+        username is the Django-friendly username of the user. ldap_user.dn is
+        the user's DN and ldap_user.attrs contains all of their LDAP attributes.
+        """
+
+        model = self.get_user_model()
+        username_field = getattr(model, 'USERNAME_FIELD', 'username')
+        password_field = getattr(model, 'PASSWORD_FIELD', 'password')
+
         kwargs = {
-            'username': username,
-            'defaults': {'username': username.lower(),
-                         'password': make_password(None)}
+            username_field: username,
+            'defaults': {username_field: username.lower(),
+                         password_field: make_password(None)}
         }
-        return self.user_document.objects.get_or_create(**kwargs)
+        return model.objects.get_or_create(**kwargs)
 
-    def authenticate(self, username=None, password=None):
-        user = None
-        user_dn = settings.AUTH_LDAP_USER_DN_TEMPLATE.format(user=username)
-        ldap_uri = settings.AUTH_LDAP_SERVER_URI
-        ldap.set_option(ldap.OPT_NETWORK_TIMEOUT, self.LDAP_TIMEOUT)
-        # Required when using self-signed certs
-        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-        ldap.set_option(ldap.OPT_DEBUG_LEVEL, 255)
-        ldap_client = ldap.initialize(ldap_uri)
-        try:
-            ldap_client.simple_bind_s(user_dn, password)
-            user, created = self.get_or_create_user(username)
-            logger.info('User {username} successfully logged in'.format(username=username))
-        except ldap.INVALID_CREDENTIALS:
-            logger.info('User {username} not logged in, invalid credentials'.format(username=username))
-        except ldap.LDAPError, e:
-            # logs any other ldap error as error
-            logger.error(e)
-        finally:
-            ldap_client.unbind()
+    def authenticate(self, username, password, **kwargs):
+        ldap_user = _LDAPUser(self, username=username.strip())
+        user = ldap_user.authenticate(password)
+
         return user
-
 
