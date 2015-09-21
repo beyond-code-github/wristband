@@ -9,7 +9,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 from __future__ import absolute_import, unicode_literals
-from django.core.exceptions import ImproperlyConfigured
 
 import sys
 import environ
@@ -267,7 +266,7 @@ REST_FRAMEWORK = {
 # APP SPECIFIC SETTINGS
 # -----------------------------------------------------------------------------
 
-RELEASES_APP_URI = env('RELEASES_APP_URI', default='http://example.com/apps')
+RELEASES_APP_URI = env('RELEASES_APP_URI')
 STAGES = env('STAGES', default='qa,staging')
 
 

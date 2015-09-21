@@ -77,14 +77,14 @@ MONGO_DB_NAME
 App specific environment variables
 
 
-===================================== ===================================== ======================= ==================
-Environment Variable                  Django Setting                        Development Default     Production Default
-===================================== ===================================== ======================= ==================
-STAGES                                STAGES                                qa,staging              qa,staging
-RELEASES_APP_URI                      RELEASES_APP_URI                      http://example.com/apps
-AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  n/a                     n/a
-AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE            n/a                     n/a
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER n/a                     n/a
+===================================== ===================================== =========================== ==================
+Environment Variable                  Django Setting                        Development Default         Production Default
+===================================== ===================================== =========================== ==================
+STAGES                                STAGES                                qa,staging                  qa,staging
+RELEASES_APP_URI                      RELEASES_APP_URI                      raises error                raises error
+AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldaps://localhost           raises error
+AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE            cn={user},dc=example,dc=com raises error
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                        raises error
 DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG
 ===================================== ===================================== ======================= ==================
 
