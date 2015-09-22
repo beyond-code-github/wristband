@@ -1,17 +1,9 @@
 # User account
-dn: uid=mars,ou=users,dc=example,dc=com
+dn: cn=mars,ou=users,dc=example,dc=com
 cn: mars
 givenName: Mars
-sn: Mars
+displayName: Mars Bar
+sn: Bar
 uid: mars
-uidNumber: 10000
-gidNumber: 10000
-homeDirectory: /home/mars
-objectClass: top
-objectClass: posixAccount
-objectClass: shadowAccount
 objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-loginShell: /bin/bash
 userPassword: {CRYPT}*

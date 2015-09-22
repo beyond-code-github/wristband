@@ -1,4 +1,4 @@
 dn: cn=planets,ou=groups,dc=example,dc=com
 objectClass: top
-objectClass: posixGroup
-gidNumber: 678
+objectClass: groupOfNames
+member: cn=mars,ou=users,dc=example,dc=com
