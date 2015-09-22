@@ -4,7 +4,8 @@ import logging
 import jenkins
 
 from . import providers_config
-from .generics import ServiceProvider, DeployException
+from .generics import ServiceProvider
+from wristband.providers.exceptions import DeployException
 from wristband.apps.models import App
 from wristband.providers.models import Job
 
@@ -14,7 +15,6 @@ logger = logging.getLogger('wristband.provider')
 
 
 class JenkinsServiceProvider(ServiceProvider):
-
     def __init__(self, app_name, stage):
         self.app = App.objects.get(name=app_name, stage=stage)
         config = self.get_jenkins_server_config()
@@ -55,7 +55,7 @@ class JenkinsServiceProvider(ServiceProvider):
                 # users click the deploy button exactly at the same time.
                 build_info = self.server.get_build_info(self.job_name, potential_build_id)
                 version_param_dictionary = \
-                filter(lambda x: x['name'] == 'APP_BUILD_NUMBER', build_info['actions'][0]['parameters'])[0]
+                    filter(lambda x: x['name'] == 'APP_BUILD_NUMBER', build_info['actions'][0]['parameters'])[0]
                 version_to_check = version_param_dictionary['value']
                 if version_to_check == version:
                     job = Job(app=self.app, provider_name='jenkins', provider_id=potential_build_id)

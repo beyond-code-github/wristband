@@ -1,6 +1,6 @@
 import mock
 
-from wristband.providers.generics import DeployException
+from wristband.providers.exceptions import DeployException
 
 
 @mock.patch('wristband.apps.views.JenkinsServiceProvider')

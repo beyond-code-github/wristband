@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import APIException
 
 from wristband.common.viewsets import ReadOnlyViewSet
-from wristband.providers.generics import DeployException
+from wristband.providers.exceptions import DeployException
 from wristband.providers.service_providers import JenkinsServiceProvider
 from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider
 from .serializers import NestedAppSerializer, AppSerializer
