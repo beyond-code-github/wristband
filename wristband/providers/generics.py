@@ -1,9 +1,11 @@
 from wristband.common.mixins import JsonDataProviderRetrieveMixin
 
+
 class DataProvider(object):
     """
     Read-only data provider
     """
+
     def __init__(self):
         self.raw_data = self._get_raw_data()
         self.list_data = self._get_list_data()
@@ -31,7 +33,7 @@ class DataProvider(object):
 
 
 class JsonDataProvider(JsonDataProviderRetrieveMixin, DataProvider):
-  pass
+    pass
 
 
 class ServiceProvider(object):

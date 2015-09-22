@@ -24,3 +24,4 @@ AUTH_LDAP_USER_DN_TEMPLATE = ''
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = False
 
 REST_FRAMEWORK = {} # this disables auth for tests
+
