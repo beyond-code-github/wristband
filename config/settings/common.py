@@ -246,7 +246,7 @@ LOGGING = {
 # AUTHENTICATION
 # -----------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = (
-    'wristband.authentication.backends.SimpleMongoLDAPBackend',
+    'wristband.authentication.backends.MongoLDAPBackend',
 )
 
 AUTH_USER_MODEL = 'mongo_auth.MongoUser'

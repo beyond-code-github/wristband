@@ -6,6 +6,9 @@ from django_auth_ldap.backend import LDAPBackend, _LDAPUser, populate_user
 
 logger = logging.getLogger('wristband.authentication')
 
+# Most of this code comes from django_auth_ldap, I've changed a few lines only to make it work with Mongo
+# As soon as the mongo engine team releases the django compatible version this code can go
+
 
 class LDAPUser(_LDAPUser):
     """
@@ -56,7 +59,7 @@ class LDAPUser(_LDAPUser):
             self._populate_and_save_user_profile()
 
 
-class SimpleMongoLDAPBackend(LDAPBackend):
+class MongoLDAPBackend(LDAPBackend):
     """
     Need to slightly modify the default one to work with Mongoengine
     """
@@ -82,7 +85,7 @@ class SimpleMongoLDAPBackend(LDAPBackend):
         return model.objects.get_or_create(**kwargs)
 
     def authenticate(self, username, password, **kwargs):
-        ldap_user = _LDAPUser(self, username=username.strip())
+        ldap_user = LDAPUser(self, username=username.strip())
         user = ldap_user.authenticate(password)
 
         return user
