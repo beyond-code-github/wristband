@@ -1,8 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from rest_framework.permissions import IsAdminUser
+from rest_framework.exceptions import APIException
+
 
 from wristband.common.viewsets import ReadOnlyViewSet
+from wristband.providers.exceptions import DeployException
 from wristband.providers.service_providers import JenkinsServiceProvider
 from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider
 from .serializers import NestedAppSerializer, AppSerializer
@@ -30,5 +34,9 @@ class DeployAppView(APIView):
 
     def put(self, request, app_name, stage, version, format=None):
         provider = JenkinsServiceProvider(app_name, stage)
-        job_id = provider.deploy(version)
+        try:
+            job_id = provider.deploy(version)
+        except DeployException as e:
+            raise APIException(e.message)
+
         return Response({'job_id': job_id})
