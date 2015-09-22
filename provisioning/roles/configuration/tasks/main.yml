@@ -7,3 +7,4 @@
   with_items:
     - {variable: 'AUTH_LDAP_USER_DN_TEMPLATE', value: 'cn={user},dc=example,dc=com'}
     - {variable: 'AUTH_LDAP_SERVER_URI', value: 'ldaps://localhost'}
+    - {variable: 'DEPLOYED_ENV', value: 'local'}

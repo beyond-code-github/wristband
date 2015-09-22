@@ -272,3 +272,5 @@ STAGES = env('STAGES', default='qa,staging')
 
 PROVIDER_CONFIG = env('PROVIDER_CONFIG', default='providers.yaml')
 
+# THE ENVIRONMENT WRISTBAND IS DEPLOYED IN
+WRISTBAND_ENV = env('WRISTBAND_ENV', default='local')

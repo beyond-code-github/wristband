@@ -25,3 +25,4 @@ AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = False
 
 REST_FRAMEWORK = {} # this disables auth for tests
 
+WRISTBAND_ENV = 'test'
