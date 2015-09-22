@@ -1,5 +1,6 @@
 from mongoengine.django.mongo_auth.models import get_user_document
 import pytest
+from rest_framework.test import APIClient, APIRequestFactory
 
 
 class DummyApp(object):
@@ -59,3 +60,19 @@ def django_user_model():
     Overrides the default pytest-django fixture
     """
     return get_user_document()
+
+
+@pytest.fixture
+def api_client():
+    """
+    REST framework API client
+    """
+    return APIClient()
+
+
+@pytest.fixture
+def api_rf():
+    """
+    REST framework request factory
+    """
+    return APIRequestFactory()
