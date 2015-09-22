@@ -10,7 +10,6 @@ from .common import *  # noqa
 # ------------------------------------------------------------------------------
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
-TEST_ENV = True
 
 # SECRET CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -24,4 +23,9 @@ AUTH_LDAP_SERVER_URI = ''
 AUTH_LDAP_USER_DN_TEMPLATE = ''
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = False
 
-REST_FRAMEWORK = {} # disable any auth/permission not defined at the class level
+AUTHENTICATION_BACKENDS = (
+    'wristband.test_utils.backends.DummyBackend',
+)
+
+ADMIN_LOGIN = 'admin'
+ADMIN_PASSWORD = 'pbkdf2_sha256$20000$L2eoHXHWJuFY$N4WSNDaL4YUp7/Ghw7jgFL30aHdToLgI6REfKVBn/ps='

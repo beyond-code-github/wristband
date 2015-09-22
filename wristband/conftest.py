@@ -1,6 +1,8 @@
 from mongoengine.django.mongo_auth.models import get_user_document
 import pytest
-from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.test import APIRequestFactory
+
+from wristband.test_utils.authentication import PatchedAPIClient
 
 
 class DummyApp(object):
@@ -66,8 +68,10 @@ def django_user_model():
 def api_client():
     """
     REST framework API client
+
+    This is a patched version using the login function compatible with Mongo
     """
-    return APIClient()
+    return PatchedAPIClient()
 
 
 @pytest.fixture
