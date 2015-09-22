@@ -48,5 +48,4 @@ class DeployAppView(APIView):
             # I'm aware this is horrible and we should authenticate using the api_client but since we broke the default
             # login function in Django we can't do it and this is quicker (but very nasty!)
             return []
-        else:
-            super(DeployAppView, self).get_permissions()
+        return super(DeployAppView, self).get_permissions()
