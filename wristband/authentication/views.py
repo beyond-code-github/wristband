@@ -16,7 +16,7 @@ def login_view(request):
         data = {'session_key': request.session.session_key}
         status = 200
     else:
-        data = {'details': 'Invalid credential details'}
+        data = {'details': 'Invalid credential details. Please ensure you are using your QA environment login.'}
         status = 401 #forbidden
     return JsonResponse(data=data, status=status)
 
