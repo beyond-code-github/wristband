@@ -60,7 +60,6 @@ class CustomTokenAuthentication(TokenAuthentication):
     model = Token
 
     def authenticate_credentials(self, key):
-        import pdb; pdb.set_trace()
         try:
             token = self.model.objects.get(key=key)
         except self.model.DoesNotExist:
