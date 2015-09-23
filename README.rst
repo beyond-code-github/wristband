@@ -119,6 +119,6 @@ Make sure you are in the project directory (/vagrant), then do:
 If using the ldap server in the VM the login credentials are: mars/password
 The user mars belongs to the planets group.
 
-SLDAP is exposed to the host machine on port 1636
+LDAPS is exposed to the host machine on port 1636
 
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/
