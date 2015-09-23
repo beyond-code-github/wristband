@@ -5,6 +5,8 @@ from django.conf import settings
 from mongoengine import DoesNotExist
 from mongoengine.django.mongo_auth.models import get_user_document
 import ldap
+from rest_framework.authentication import TokenAuthentication
+from wristband.authentication.models import Token
 
 logger = logging.getLogger('wristband.authentication')
 
@@ -51,3 +53,7 @@ class SimpleMongoLDAPBackend(object):
         finally:
             ldap_client.unbind()
         return user
+
+
+class CustomTokenAuthentication(TokenAuthentication):
+    model = Token
