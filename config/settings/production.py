@@ -54,3 +54,4 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS += ("gunicorn", )
 
+WRISTBAND_ENV = env('WRISTBAND_ENV', default='prod')

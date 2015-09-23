@@ -6,6 +6,7 @@ from django.conf import settings
 
 from wristband.authentication.utils import login
 
+
 @require_POST
 @csrf_exempt
 def login_view(request):
@@ -17,8 +18,9 @@ def login_view(request):
         data = {'session_key': request.session.session_key}
         status = 200
     else:
-        data = {'details': 'Invalid credential details. Please ensure you are using your {environment} login.'.format(environment=settings.WRISTBAND_ENV)}
-        status = 401 #forbidden
+        data = {'details': 'Invalid credential details. Please ensure you are using your {environment} login.'.format(
+            environment=settings.WRISTBAND_ENV)}
+        status = 401  # forbidden
     return JsonResponse(data=data, status=status)
 
 
@@ -27,4 +29,3 @@ def logout_view(request):
     logout(request)
     data = {'message': 'User logged out'}
     return JsonResponse(data=data)
-
