@@ -5,12 +5,17 @@ from django.conf import settings
 from mongoengine import DoesNotExist
 from mongoengine.django.mongo_auth.models import get_user_document
 import ldap
+from rest_framework import exceptions
+from rest_framework.authentication import TokenAuthentication
+
+from wristband.authentication.models import Token
 
 logger = logging.getLogger('wristband.authentication')
 
+
 class SimpleMongoLDAPBackend(object):
     """
-    https://docs.djangoproject.com/en/1.4/topics/auth/#authentication-backends
+    This is django-auth-ldap code with minor changes only
     """
     user_document = get_user_document()
 
@@ -51,3 +56,21 @@ class SimpleMongoLDAPBackend(object):
         finally:
             ldap_client.unbind()
         return user
+
+
+class CustomTokenAuthentication(TokenAuthentication):
+    """
+    This is REST framework code with minor changes only
+    """
+    model = Token
+
+    def authenticate_credentials(self, key):
+        try:
+            token = self.model.objects.get(key=key)
+        except self.model.DoesNotExist:
+            raise exceptions.AuthenticationFailed(_('Invalid token.'))
+
+        if not token.user.is_active:
+            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+
+        return token.user, token
