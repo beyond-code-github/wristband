@@ -86,7 +86,7 @@ AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldap
 AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE            cn={user},dc=example,dc=com raises error
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                        raises error
 DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG
-===================================== ===================================== ======================= ==================
+===================================== ===================================== ============================ ==================
 
 
 Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
@@ -110,6 +110,21 @@ Running
 ^^^^^^^
 
      $ ./manage.py runserver_plus 0.0.0.0:8000
+
+
+Authentication
+^^^^^^^^^^^^^^
+
+Wristband is capable of authenticating users in two different ways: token and session.
+
+Token authentication should be used in the client-server scenario:
+
+1. POST username and password to /api/token/ to get a new token
+2. Include the token in the Authorization HTTP header. The key should be prefixed by the string literal "Token", with whitespace separating the two strings.
+
+Session authentication should be used in the browser scenario:
+
+1. POST username and password to /login/
 
 
 If using the ldap server in the VM the login credentials are: Manager/password

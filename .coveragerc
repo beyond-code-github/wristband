@@ -6,6 +6,7 @@ branch = True
 omit = *migrations*
        *tests*
        *serializers.py
+       /wristband/authentication/backends.py
 
 
 

@@ -256,6 +256,7 @@ AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'wristband.authentication.backends.CustomTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
