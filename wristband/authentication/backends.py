@@ -3,6 +3,9 @@ from django.contrib.auth.hashers import make_password
 
 from mongoengine.django.mongo_auth.models import get_user_document
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser, populate_user
+from rest_framework.authentication import TokenAuthentication
+from wristband.authentication.models import Token
+from wristband.providers import exceptions
 
 logger = logging.getLogger('wristband.authentication')
 
@@ -90,3 +93,20 @@ class MongoLDAPBackend(LDAPBackend):
 
         return user
 
+
+class CustomTokenAuthentication(TokenAuthentication):
+    """
+    This is REST framework code with minor changes only
+    """
+    model = Token
+
+    def authenticate_credentials(self, key):
+        try:
+            token = self.model.objects.get(key=key)
+        except self.model.DoesNotExist:
+            raise exceptions.AuthenticationFailed(_('Invalid token.'))
+
+        if not token.user.is_active:
+            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+
+        return token.user, token

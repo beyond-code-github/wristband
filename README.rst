@@ -91,6 +91,7 @@ DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBU
 ===================================== ===================================== ====================================== ==================
 
 
+
 Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
 file called `providers.yaml` in the `wristband/providers` directory containing information for the Jenkins service in
 the environment you are deploying to (ie. the target environment, not the source environment):
@@ -115,6 +116,21 @@ Make sure you are in the project directory (/vagrant), then do:
 
      $ run_wristband
 
+<<<<<<< HEAD
+=======
+Authentication
+^^^^^^^^^^^^^^
+
+Wristband is capable of authenticating users in two different ways: token and session.
+
+Token authentication should be used in the client-server scenario:
+
+1. POST username and password to /api/token/ to get a new token
+2. Include the token in the Authorization HTTP header. The key should be prefixed by the string literal "Token", with whitespace separating the two strings.
+
+Session authentication should be used in the browser scenario:
+
+1. POST username and password to /login/
 
 If using the ldap server in the VM the login credentials are: mars/password
 The user mars belongs to the planets group.
