@@ -8,6 +8,8 @@ from .generics import ServiceProvider
 from wristband.providers.exceptions import DeployException
 from wristband.apps.models import App
 from wristband.providers.models import Job
+import requests
+import json
 
 JENKINS_CALL_SAFE_LIMIT = 8
 
@@ -71,3 +73,34 @@ class JenkinsServiceProvider(ServiceProvider):
     def status(self, job):
         build_info = self.server.get_build_info(self.job_name, job.provider_id)
         return build_info['building'] or build_info['result']
+
+
+class DocktorServiceProvider(ServiceProvider):
+    def __init__(self, app_name, stage):
+        self.app_name = app_name
+        self.stage = stage
+        self.app = App.objects.get(name=app_name, stage=stage)
+        self.config = self.get_docktor_server_config()
+        self.server = requests.session()
+
+    def get_docktor_server_config(self):
+        return providers_config.providers['docktor'][self.app.stage][self.app.security_zone]
+
+    def deploy(self, version):
+        params = {
+            "APP": self.app.name,
+            "APP_BUILD_NUMBER": version
+        }
+        try:
+            r = self.server.patch("{}/apps/{}".format(self.config["uri"], self.app_name), headers={"content-type": "application/json"}, data=json.dumps({"slug_uri": "https://webstore.tax.service.gov.uk/slugs/{app}/{app}_{version}.tgz".format(app=self.app_name, version=version)}))
+            r.raise_for_status()
+        except requests.HTTPError as e:
+            raise DeployException(e.message)
+        return self.save_job_info(version)
+
+    def save_job_info(self, version):
+        return "{}_{}".format(self.stage, self.app_name)
+
+    def status(self, job):
+        build_info = self.server.get("{}/apps/{}".format(self.config.url, self.app)).json()
+        return build_info['state']

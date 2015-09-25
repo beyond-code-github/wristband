@@ -4,7 +4,7 @@ from rest_framework.exceptions import APIException
 
 from wristband.common.viewsets import ReadOnlyViewSet
 from wristband.providers.exceptions import DeployException
-from wristband.providers.service_providers import JenkinsServiceProvider
+from wristband.providers.service_providers import JenkinsServiceProvider, DocktorServiceProvider
 from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider
 from .serializers import NestedAppSerializer, AppSerializer
 
@@ -27,7 +27,7 @@ class AppViewSet(ReadOnlyViewSet):
 
 class DeployAppView(APIView):
     def put(self, request, app_name, stage, version, format=None):
-        provider = JenkinsServiceProvider(app_name, stage)
+        provider = DocktorServiceProvider(app_name, stage)
         try:
             job_id = provider.deploy(version)
         except DeployException as e:

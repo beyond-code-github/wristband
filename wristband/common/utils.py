@@ -1,9 +1,10 @@
 from wristband.apps.models import App
 from wristband.providers.models import Job
-from wristband.providers.service_providers import JenkinsServiceProvider
+from wristband.providers.service_providers import JenkinsServiceProvider, DocktorServiceProvider
 
 PROVIDERS_LOOKUP = {
-    'jenkins': JenkinsServiceProvider
+    'jenkins': JenkinsServiceProvider,
+    'docktor': DocktorServiceProvider
 }
 
 
