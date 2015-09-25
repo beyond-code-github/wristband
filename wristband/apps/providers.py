@@ -1,6 +1,8 @@
 import datetime
 import requests
+from concurrent import futures
 from django.conf import settings
+from ..providers import providers_config
 
 from wristband.common.utils import extract_stage, extract_security_zone_from_env
 from wristband.providers.generics import JsonDataProvider
@@ -141,3 +143,28 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
                 data.append(app_to_be_added)
                 apps_indexes[app_name] = len(data) - 1
         return sorted(data, key=lambda x: x['name'])
+
+
+class DocktorAppDataProvider(ReleaseAppDataProvider):
+    _not_expired_jobs = None
+
+    def _get_raw_data(self):
+        session = requests.Session()
+        apps = []
+        for stage in providers_config.providers['docktor'].keys():
+            for zone in providers_config.providers['docktor'][stage].keys():
+                config = providers_config.providers['docktor'][stage][zone]
+                URLS = ["{}/apps/{}".format(config["uri"], a) for a in session.get("{}/apps/".format(config["uri"])).json()]
+                with futures.ThreadPoolExecutor(max_workers=30) as executor:
+                    future_to_url = (executor.submit(requests.get, url) for url in URLS)
+                    for future in futures.as_completed(future_to_url):
+                        data = future.result().json()
+                        now = (datetime.datetime.now() - datetime.datetime(1970,1,1)).total_seconds()
+                        apps.append({
+                            "fs": now,
+                            "ls": now,
+                            "an": data["app"],
+                            "env": "{}-{}".format(stage, zone),
+                            "ver": data["slug_uri"].split("_")[1].rstrip(".tgz")
+                        })
+        return apps

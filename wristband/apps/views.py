@@ -5,7 +5,7 @@ from rest_framework.exceptions import APIException
 from wristband.common.viewsets import ReadOnlyViewSet
 from wristband.providers.exceptions import DeployException
 from wristband.providers.service_providers import JenkinsServiceProvider, DocktorServiceProvider
-from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider
+from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider, DocktorAppDataProvider
 from .serializers import NestedAppSerializer, AppSerializer
 
 
@@ -22,7 +22,7 @@ class NestedAppViewSet(ReadOnlyViewSet):
 
 class AppViewSet(ReadOnlyViewSet):
     serializer_class = AppSerializer
-    data_provider_class = ReleaseAppDataProvider
+    data_provider_class = DocktorAppDataProvider
 
 
 class DeployAppView(APIView):
