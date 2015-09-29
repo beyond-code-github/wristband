@@ -1,1 +1,7 @@
-# POPULATE ME!!
+docktor:
+  staging:
+    left:
+      uri: http://localhost:8888
+  qa:
+    left:
+      uri: http://localhost:8889

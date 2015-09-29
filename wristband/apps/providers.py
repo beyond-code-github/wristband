@@ -1,14 +1,22 @@
 import datetime
+import re
+
 import requests
-from concurrent import futures
 from django.conf import settings
-from ..providers import providers_config
+
+from gevent import monkey;
+
+monkey.patch_socket()
+from gevent.pool import Pool
 
 from wristband.common.utils import extract_stage, extract_security_zone_from_env
+from wristband.providers import providers_config
 from wristband.providers.generics import JsonDataProvider
 from wristband.providers.models import Job
 
 EXPIRY_JOB_TIME_MINUTES = 10
+CONCURRENT_JOBS_LIMIT = 30
+VERSION_REGEX = r'\d+\.\d+\.\d+'
 
 
 class ParentReleaseAppDataProvider(JsonDataProvider):
@@ -58,7 +66,8 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
     def get_not_expired_jobs(self):
         if self._not_expired_jobs is None:
             time_delta = datetime.datetime.now() - datetime.timedelta(minutes=EXPIRY_JOB_TIME_MINUTES)
-            self._not_expired_jobs = Job.objects(start_time__gte=time_delta).ordered_by_time(desc=True) # this is a list!
+            self._not_expired_jobs = Job.objects(start_time__gte=time_delta).ordered_by_time(
+                desc=True)  # this is a list!
         return self._not_expired_jobs
 
     def get_last_job_id_per_app(self, app_name, stage):
@@ -146,25 +155,38 @@ class ReleaseAppDataProvider(ParentReleaseAppDataProvider):
 
 
 class DocktorAppDataProvider(ReleaseAppDataProvider):
-    _not_expired_jobs = None
-
     def _get_raw_data(self):
-        session = requests.Session()
+        docktor_config = providers_config.providers['docktor']
         apps = []
-        for stage in providers_config.providers['docktor'].keys():
-            for zone in providers_config.providers['docktor'][stage].keys():
-                config = providers_config.providers['docktor'][stage][zone]
-                URLS = ["{}/apps/{}".format(config["uri"], a) for a in session.get("{}/apps/".format(config["uri"])).json()]
-                with futures.ThreadPoolExecutor(max_workers=30) as executor:
-                    future_to_url = (executor.submit(requests.get, url) for url in URLS)
-                    for future in futures.as_completed(future_to_url):
-                        data = future.result().json()
-                        now = (datetime.datetime.now() - datetime.datetime(1970,1,1)).total_seconds()
-                        apps.append({
-                            "fs": now,
-                            "ls": now,
-                            "an": data["app"],
-                            "env": "{}-{}".format(stage, zone),
-                            "ver": data["slug_uri"].split("_")[1].rstrip(".tgz")
-                        })
+        for stage in docktor_config:
+            for zone in docktor_config[stage]:
+                apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
+                apps_list = requests.get(apps_uri).json()
+                env = '{stage}-{zone}'.format(stage=stage, zone=zone)
+                apps_urls = [('{apps_uri}/{app}'.format(apps_uri=apps_uri, app=app), env) for app in apps_list]
+                pool = Pool(CONCURRENT_JOBS_LIMIT)
+                apps.append(pool.imap(self.get_app_info, apps_urls))
+
         return apps
+
+    def get_app_info(self, env_url, env):
+        data = requests.get(env_url).json()
+        return {
+            'an': data['app'],
+            'env': env,
+            'ver': self.extract_version_from_slug(data['slug_uri'])
+        }
+
+    @staticmethod
+    def extract_version_from_slug(slug):
+        try:
+            version = re.findall(VERSION_REGEX, slug)[0]
+        except IndexError:
+            version = ''
+        return version
+
+    def _get_list_data(self):
+        sorted(self.raw_data, key=lambda x: x['name'])
+
+    def get_retrieve_data(self, pk, domain_pk):
+        pass
