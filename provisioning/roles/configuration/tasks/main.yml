@@ -7,3 +7,14 @@
   with_items:
     - {variable: 'AUTH_LDAP_USER_DN_TEMPLATE', value: 'cn={user},dc=example,dc=com'}
     - {variable: 'AUTH_LDAP_SERVER_URI', value: 'ldaps://localhost'}
+
+- name: Add aliases
+  lineinfile:
+    dest=/home/vagrant/.bash_aliases
+    line="alias {{item.alias}}='{{item.value}}'"
+    create=yes
+    state=present
+    owner=vagrant
+  with_items:
+    - {alias: 'run_wristband', value: '/home/vagrant/venv/bin/python /vagrant/manage.py runserver_plus 0.0.0.0:8000'}
+    - {alias: 'run_docktor', value: '/home/vagrant/venv/bin/python /vagrant/mocks/docktor_mock.py'}

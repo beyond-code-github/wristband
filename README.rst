@@ -109,7 +109,13 @@ To finish preparation, run
 Running
 ^^^^^^^
 
-     $ ./manage.py runserver_plus 0.0.0.0:8000
+The VM contains two mock instances of Docktor, they need to be running.
+
+     $ run_docktor
+
+Then run wristband
+
+     $ run_wristband
 
 
 Authentication
