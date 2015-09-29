@@ -103,7 +103,7 @@ class AppsHandler(cyclone.web.RequestHandler):
         self.apps = apps
 
     def get(self):
-        self.write(self.apps.keys())
+        self.write(json.dumps(self.apps.keys()))
 
 
 class AppHandler(cyclone.web.RequestHandler):

@@ -1,22 +1,21 @@
 import datetime
-import re
+from functools import partial
+import pprint
 
 import requests
 from django.conf import settings
-
 from gevent import monkey;
 
 monkey.patch_socket()
 from gevent.pool import Pool
 
-from wristband.common.utils import extract_stage, extract_security_zone_from_env
+from wristband.common.utils import extract_stage, extract_security_zone_from_env, extract_version_from_slug
 from wristband.providers import providers_config
 from wristband.providers.generics import JsonDataProvider
 from wristband.providers.models import Job
 
 EXPIRY_JOB_TIME_MINUTES = 10
 CONCURRENT_JOBS_LIMIT = 30
-VERSION_REGEX = r'\d+\.\d+\.\d+'
 
 
 class ParentReleaseAppDataProvider(JsonDataProvider):
@@ -163,30 +162,23 @@ class DocktorAppDataProvider(ReleaseAppDataProvider):
                 apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
                 apps_list = requests.get(apps_uri).json()
                 env = '{stage}-{zone}'.format(stage=stage, zone=zone)
-                apps_urls = [('{apps_uri}/{app}'.format(apps_uri=apps_uri, app=app), env) for app in apps_list]
+                apps_urls = ['{apps_uri}{app}'.format(apps_uri=apps_uri, app=app) for app in apps_list]
                 pool = Pool(CONCURRENT_JOBS_LIMIT)
-                apps.append(pool.imap(self.get_app_info, apps_urls))
-
+                partial_get_app_info = partial(self.get_app_info, env)
+                apps += pool.map(partial_get_app_info, apps_urls)
         return apps
 
-    def get_app_info(self, env_url, env):
+    @staticmethod
+    def get_app_info(env, env_url):
         data = requests.get(env_url).json()
         return {
-            'an': data['app'],
-            'env': env,
-            'ver': self.extract_version_from_slug(data['slug_uri'])
+            'name': data['app'],
+            'stage': env,
+            'version': extract_version_from_slug(data['slug_uri'])
         }
 
-    @staticmethod
-    def extract_version_from_slug(slug):
-        try:
-            version = re.findall(VERSION_REGEX, slug)[0]
-        except IndexError:
-            version = ''
-        return version
-
     def _get_list_data(self):
-        sorted(self.raw_data, key=lambda x: x['name'])
+        return sorted(self.raw_data, key=lambda x: x['name'])
 
     def get_retrieve_data(self, pk, domain_pk):
         pass
