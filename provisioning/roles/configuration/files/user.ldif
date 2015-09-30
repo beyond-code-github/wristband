@@ -1,0 +1,9 @@
+# User account
+dn: cn=mars,ou=users,dc=example,dc=com
+cn: mars
+givenName: Mars
+displayName: Mars Bar
+sn: Bar
+uid: mars
+objectClass: inetOrgPerson
+userPassword: {CRYPT}*
