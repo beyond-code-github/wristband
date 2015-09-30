@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser
@@ -7,14 +6,14 @@ from rest_framework.exceptions import APIException
 
 from wristband.common.viewsets import ReadOnlyViewSet
 from wristband.providers.exceptions import DeployException
-from wristband.providers.service_providers import JenkinsServiceProvider, DocktorServiceProvider
-from .providers import NestedReleaseAppDataProvider, ReleaseAppDataProvider, DocktorAppDataProvider
+from wristband.providers.service_providers import DocktorServiceProvider
+from .providers import NestedDocktorAppDataProvider, DocktorAppDataProvider
 from .serializers import NestedAppSerializer, AppSerializer
 
 
 class NestedAppViewSet(ReadOnlyViewSet):
     serializer_class = NestedAppSerializer
-    data_provider_class = NestedReleaseAppDataProvider
+    data_provider_class = NestedDocktorAppDataProvider
 
     def list(self, request, *args, **kwargs):
         stage_pk = kwargs['stage_pk']

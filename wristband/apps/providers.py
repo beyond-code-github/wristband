@@ -1,7 +1,7 @@
 from functools import partial
 
 import requests
-from gevent import monkey;
+from gevent import monkey
 
 monkey.patch_socket()
 from gevent.pool import Pool
