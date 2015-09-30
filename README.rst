@@ -116,8 +116,7 @@ Make sure you are in the project directory (/vagrant), then do:
 
      $ run_wristband
 
-<<<<<<< HEAD
-=======
+
 Authentication
 ^^^^^^^^^^^^^^
 
