@@ -21,7 +21,7 @@ class NestedAppViewSet(ReadOnlyViewSet):
 
 
 class AppViewSet(ReadOnlyViewSet):
-    serializer_class = NestedAppSerializer
+    serializer_class = AppSerializer
     data_provider_class = DocktorAppDataProvider
 
 
