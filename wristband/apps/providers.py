@@ -19,21 +19,22 @@ class GenericDocktorDataProvider(JsonDataProvider):
         docktor_config = providers_config.providers['docktor']
         apps = []
         for stage in docktor_config:
-            for zone in docktor_config[stage]:
-                apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
+            for security_zone in docktor_config[stage]:
+                apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][security_zone]['uri'])
                 apps_list = requests.get(apps_uri).json()
                 apps_urls = ['{apps_uri}{app}'.format(apps_uri=apps_uri, app=app) for app in apps_list]
                 pool = Pool(CONCURRENT_JOBS_LIMIT)
-                partial_get_app_info = partial(self.get_app_info, stage)
+                partial_get_app_info = partial(self.get_app_info, stage, security_zone)
                 apps += pool.map(partial_get_app_info, apps_urls)
         return apps
 
     @staticmethod
-    def get_app_info(stage, env_url):
+    def get_app_info(stage, security_zone, env_url):
         data = requests.get(env_url).json()
         return {
             'name': data['app'],
             'stage': stage,
+            'security_zone': security_zone,
             'version': extract_version_from_slug(data['slug_uri']),
             'state': data['state']
         }
@@ -55,6 +56,12 @@ class NestedDocktorAppDataProvider(GenericDocktorDataProvider):
         filtered_apps = filter(lambda x: x[domain_pk] == pk, self.list_data)
         return sorted(filtered_apps, key=lambda x: x['name'])
 
+    def to_models(self):
+        return [{'name': app['name'],
+                 'stage': app['stage'],
+                 'security_zone': app['security_zone']}
+                for app in self.raw_data]
+
 
 class DocktorAppDataProvider(GenericDocktorDataProvider):
     def _get_list_data(self):
@@ -65,13 +72,13 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
         [
             {
                 "name": "a-b-test",
-                "environment": "qa-left",
+                "stage": "qa",
                 "version": "1.7.7"
                 "state": "healthy"
             },
             {
                 "name": "a-b-test",
-                "environment": "staging-left",
+                "stage": "staging",
                 "version": "1.7.2"
                 "state": "unhealthy"
             }
@@ -108,7 +115,8 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                 data[already_seen_app_index]['stages'].append({
                     'name': app_stage,
                     'version': app['version'],
-                    'state': app['state']
+                    'state': app['state'],
+
                 })
             else:
                 # we've never seen this app before
