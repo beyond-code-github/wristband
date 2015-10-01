@@ -92,18 +92,9 @@ DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBU
 
 
 
-Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
-file called `providers.yaml` in the `wristband/providers` directory containing information for the Jenkins service in
-the environment you are deploying to (ie. the target environment, not the source environment):
-
-    jenkins:
-      env1:
-        zone1:
-          uri: https://jenkins.env1.zone1/
-          job_name: deploy
-          username: foo
-          password: <jenkins api token>
-
+Prepare a config file for the Docktor provider (currently the only Service Provider that can do deployments). Put a
+file called `providers.yaml` in the `wristband/providers` directory containing information for the Docktor service in
+the environment you are deploying to. A sample file is provided.
 
 To finish preparation, run
 
@@ -112,7 +103,11 @@ To finish preparation, run
 Running
 ^^^^^^^
 
-Make sure you are in the project directory (/vagrant), then do:
+The VM contains two mock instances of Docktor, they need to be running.
+
+     $ run_docktor
+
+Then run wristband
 
      $ run_wristband
 

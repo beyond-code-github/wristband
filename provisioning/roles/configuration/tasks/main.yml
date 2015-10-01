@@ -17,6 +17,7 @@
     owner=vagrant
   with_items:
     - {alias: 'run_wristband', value: '/home/vagrant/venv/bin/python /vagrant/manage.py runserver_plus 0.0.0.0:8000'}
+    - {alias: 'run_docktor', value: '/home/vagrant/venv/bin/python /vagrant/mocks/docktor_mock.py'}
 
 - name: Add ou, group and user to LDAP
   command: /usr/bin/ldapadd -x -w password -D cn=Manager,dc=example,dc=com -f /vagrant/provisioning/roles/configuration/files/{{ item }}.ldif
@@ -27,3 +28,4 @@
 
 - name: Set user mars password
   command: ldappasswd -x -w password -D cn=Manager,dc=example,dc=com -s password cn=mars,ou=users,dc=example,dc=com
+
