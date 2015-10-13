@@ -81,7 +81,7 @@ App specific environment variables
 Environment Variable                  Django Setting                        Development Default                    Production Default
 ===================================== ===================================== ====================================== ==================
 STAGES                                STAGES                                qa,staging                             qa,staging
-RELEASES_APP_URI                      RELEASES_APP_URI                      raises error                           raises error
+WEBSTORE_URL                          WEBSTORE_URL                          raises error                           raises error
 AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldaps://localhost                      raises error
 AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                                   raises error
 AUTH_LDAP_USER_SEARCH_DN              AUTH_LDAP_USER_SEARCH_DN              ou=users,dc=example,dc=com             raises error

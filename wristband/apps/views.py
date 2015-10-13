@@ -3,7 +3,6 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import APIException
 
-
 from wristband.common.viewsets import ReadOnlyViewSet
 from wristband.providers.exceptions import DeployException
 from wristband.providers.service_providers import DocktorServiceProvider
