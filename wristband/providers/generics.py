@@ -39,14 +39,8 @@ class JsonDataProvider(JsonDataProviderRetrieveMixin, DataProvider):
 class ServiceProvider(object):
     config = None
 
-    def __init__(self, app_name, stage):
+    def __init__(self, app_name):
         raise NotImplementedError('The method __init__ must be implemented')
 
     def deploy(self, version):
         raise NotImplementedError('The method promote must be implemented')
-
-    def status(self, job_id):
-        raise NotImplementedError('The method status must be implemented')
-
-    def save_job_info(self, version):
-        raise NotImplementedError('The method save_job_info must be implemented')

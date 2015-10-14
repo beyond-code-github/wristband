@@ -31,10 +31,10 @@ class DeployAppView(APIView):
     permission_classes = (IsAdminUser,)
 
     def put(self, request, app_name, stage, version, format=None):
-        provider = DocktorServiceProvider(app_name, stage)
+        provider = DocktorServiceProvider(app_name)
         try:
-            job_id = provider.deploy(version)
+            provider.deploy(version)
         except DeployException as e:
             raise APIException(e.message)
 
-        return Response({'job_id': job_id})
+        return Response({'status': 'deployed'})

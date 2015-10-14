@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 import requests
+from requests import HTTPError
 
 from . import providers_config
 from .generics import ServiceProvider
@@ -11,7 +12,7 @@ logger = logging.getLogger('wristband.provider')
 
 
 class DocktorServiceProvider(ServiceProvider):
-    def __init__(self, app_name, stage):
+    def __init__(self, app_name):
         self.app_name = app_name
         self.config = self.get_docktor_server_config()
         self.app_url = "{uri}/apps/{app_name}".format(uri=self.config["uri"], app_name=self.app_name)
@@ -27,11 +28,6 @@ class DocktorServiceProvider(ServiceProvider):
                     version=version)}
             r = requests.patch(self.app_url, data=params)
             r.raise_for_status()
-        except requests.HTTPError as e:
+        except HTTPError as e:
             raise DeployException(e.message)
-        return self.save_job_info(version)
-
-    def status(self, job):
-        build_info = requests.get(self.app_url).json()
-        return build_info['state']
 

@@ -12,12 +12,6 @@ class DummyApp(object):
         self.security_zone = security_zone
 
 
-class DummyJob(object):
-    def __init__(self, app, id):
-        self.app = app
-        self.id = id
-
-
 class DummyUser(object):
     def __init__(self, username, pk=1):
         self.pk = self.id = pk
@@ -32,16 +26,6 @@ def dummy_app_class():
     NOTE: this is the actual class, not an instance
     """
     return DummyApp
-
-
-@pytest.fixture
-def dummy_job_class():
-    """
-    DummyJob class, it's meant to be a quick-and-dirty mock solution for the Job document/model
-
-    NOTE: this is the actual class, not an instance
-    """
-    return DummyJob
 
 
 @pytest.fixture

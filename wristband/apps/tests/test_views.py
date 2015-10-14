@@ -17,5 +17,5 @@ def test_patched_deploy_success(mocked_docktor_service_provider, api_client):
     mocked_docktor_service_provider.return_value.deploy.return_value = 2354
     api_client.login(username='admin', password='password')
     response = api_client.put('/api/apps/coronationstreet/stages/qa/version/1.0.1/')
-    assert response.content == '{"job_id":2354}'
+    assert response.content == '{"status":"deployed"}'
     assert response.status_code == 200
