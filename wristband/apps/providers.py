@@ -1,10 +1,6 @@
 from functools import partial
 
-import requests
-from gevent import monkey
-
-monkey.patch_socket()
-from gevent.pool import Pool
+from requests_futures.sessions import FuturesSession
 
 from wristband.common.utils import extract_version_from_slug
 from wristband.providers import providers_config
@@ -18,19 +14,24 @@ class GenericDocktorDataProvider(JsonDataProvider):
     def _get_raw_data(self):
         docktor_config = providers_config.providers['docktor']
         apps = []
+        session = FuturesSession()
         for stage in docktor_config:
             for zone in docktor_config[stage]:
                 apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
-                apps_list = requests.get(apps_uri).json()
-                apps_urls = ['{apps_uri}{app}'.format(apps_uri=apps_uri, app=app) for app in apps_list]
-                pool = Pool(CONCURRENT_JOBS_LIMIT)
+                apps_list = session.get(apps_uri).result().json()
+
+                future_apps_details = [session.get('{apps_uri}{app}'.format(apps_uri=apps_uri, app=app)) for app in apps_list]
+
+                apps_details = [a.result() for a in future_apps_details]
+
                 partial_get_app_info = partial(self.get_app_info, stage)
-                apps += pool.map(partial_get_app_info, apps_urls)
+
+                apps.extend(map(lambda a: partial_get_app_info(a), apps_details))
         return apps
 
     @staticmethod
-    def get_app_info(stage, env_url):
-        data = requests.get(env_url).json()
+    def get_app_info(stage, response):
+        data = response.json()
         return {
             'name': data['app'],
             'stage': stage,
