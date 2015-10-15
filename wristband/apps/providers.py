@@ -14,7 +14,7 @@ class GenericDocktorDataProvider(JsonDataProvider):
     def _get_raw_data(self):
         docktor_config = providers_config.providers['docktor']
         apps = []
-        session = FuturesSession()
+        session = FuturesSession(max_workers=10)
         for stage in docktor_config:
             for zone in docktor_config[stage]:
                 apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
