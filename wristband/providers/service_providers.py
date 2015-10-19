@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 import requests
 from requests import HTTPError
+import json
 
 from . import providers_config
 from .generics import ServiceProvider
@@ -26,9 +27,9 @@ class DocktorServiceProvider(ServiceProvider):
         try:
             params ={"slug_uri": "{webstore_url}/{app}/{app}_{version}.tgz".format(
                     webstore_url=settings.WEBSTORE_URL,
-                    app=self.app_name,
+                    app=self.app.name,
                     version=version)}
-            r = requests.patch(self.app_url, data=params)
+            r = requests.patch(self.app_url, headers={"content-type": "application/json"}, data=json.dumps(params))
             r.raise_for_status()
         except HTTPError as e:
             raise DeployException(e.message)
