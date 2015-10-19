@@ -24,18 +24,18 @@ class GenericDocktorDataProvider(JsonDataProvider):
 
                 apps_details = [a.result() for a in future_apps_details]
 
-                partial_get_app_info = partial(self.get_app_info, stage)
+                partial_get_app_info = partial(self.get_app_info, stage, zone)
 
                 apps.extend(map(lambda a: partial_get_app_info(a), apps_details))
         return apps
 
     @staticmethod
-    def get_app_info(stage, response):
+    def get_app_info(stage, zone, response):
         data = response.json()
         return {
             'name': data['app'],
             'stage': stage,
-            'security_zone': security_zone,
+            'security_zone': zone,
             'version': extract_version_from_slug(data['slug_uri']),
             'state': data['state']
         }
