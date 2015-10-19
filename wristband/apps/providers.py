@@ -35,6 +35,7 @@ class GenericDocktorDataProvider(JsonDataProvider):
         return {
             'name': data['app'],
             'stage': stage,
+            'security_zone': security_zone,
             'version': extract_version_from_slug(data['slug_uri']),
             'state': data['state']
         }
@@ -56,6 +57,12 @@ class NestedDocktorAppDataProvider(GenericDocktorDataProvider):
         filtered_apps = filter(lambda x: x[domain_pk] == pk, self.list_data)
         return sorted(filtered_apps, key=lambda x: x['name'])
 
+    def to_models(self):
+        return [{'name': app['name'],
+                 'stage': app['stage'],
+                 'security_zone': app['security_zone']}
+                for app in self.raw_data]
+
 
 class DocktorAppDataProvider(GenericDocktorDataProvider):
     def _get_list_data(self):
@@ -66,13 +73,13 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
         [
             {
                 "name": "a-b-test",
-                "environment": "qa-left",
+                "stage": "qa",
                 "version": "1.7.7"
                 "state": "healthy"
             },
             {
                 "name": "a-b-test",
-                "environment": "staging-left",
+                "stage": "staging",
                 "version": "1.7.2"
                 "state": "unhealthy"
             }
@@ -109,7 +116,8 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                 data[already_seen_app_index]['stages'].append({
                     'name': app_stage,
                     'version': app['version'],
-                    'state': app['state']
+                    'state': app['state'],
+
                 })
             else:
                 # we've never seen this app before

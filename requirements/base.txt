@@ -21,9 +21,6 @@ requests==2.7.0
 requests-futures==0.9.5
 pyaml==15.6.3
 
-# providers
-python-jenkins==0.4.8
-
 # auth
 django-auth-ldap==1.2.6
 
