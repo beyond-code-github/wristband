@@ -8,5 +8,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for app in NestedDocktorAppDataProvider.to_models():
-            if not App.objects(name=app['name'], stage=app['stage']).first():
+            if not App.objects(name=app['name']).first():
                 App(**app).save()

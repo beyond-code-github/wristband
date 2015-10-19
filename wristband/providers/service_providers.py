@@ -6,19 +6,21 @@ from requests import HTTPError
 
 from . import providers_config
 from .generics import ServiceProvider
+from wristband.apps.models import App
 from wristband.providers.exceptions import DeployException
 
 logger = logging.getLogger('wristband.provider')
 
 
 class DocktorServiceProvider(ServiceProvider):
-    def __init__(self, app_name):
-        self.app_name = app_name
+    def __init__(self, app_name, stage):
+        self.app = App.objects.get(name=app_name)
+        self.stage = stage
         self.config = self.get_docktor_server_config()
-        self.app_url = "{uri}/apps/{app_name}".format(uri=self.config["uri"], app_name=self.app_name)
+        self.app_url = "{uri}/apps/{app_name}".format(uri=self.config["uri"], app_name=self.app.name)
 
     def get_docktor_server_config(self):
-        return providers_config.providers['docktor'][self.app.stage][self.app.security_zone]
+        return providers_config.providers['docktor'][self.stage][self.app.security_zone]
 
     def deploy(self, version):
         try:
