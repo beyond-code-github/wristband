@@ -26,7 +26,7 @@ class DocktorServiceProvider(ServiceProvider):
         try:
             params ={"slug_uri": "{webstore_url}/{app}/{app}_{version}.tgz".format(
                     webstore_url=settings.WEBSTORE_URL,
-                    app=self.app_name,
+                    app=self.app.name,
                     version=version)}
             r = requests.patch(self.app_url, data=params)
             r.raise_for_status()
