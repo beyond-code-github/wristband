@@ -1,15 +1,17 @@
 ---
-- name: Install required PIP packages inside the virtualenv
+- name: Install required PIP packages in the virtualenv
   sudo: false
   pip: requirements=/vagrant/requirements/local.txt virtualenv={{virtualenv_path}}
 
+- name: Install mocks requirements in the virtualenv
+  sudo: false
+  pip: requirements=/vagrant/mocks/requirements.txt virtualenv={{virtualenv_path}}
 
 - name: Alter bashrc to automatically enter virtualenv at login
   lineinfile:
     dest=/home/vagrant/.bashrc
     line="source {{virtualenv_binaries}}/activate"
     owner=vagrant
-
 
 - name: Go to the project home if ssh into vagrant
   lineinfile:

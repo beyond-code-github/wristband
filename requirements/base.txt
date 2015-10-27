@@ -24,7 +24,7 @@ pyaml==15.6.3
 python-jenkins==0.4.8
 
 # auth
-python-ldap==2.4.20
+django-auth-ldap==1.2.6
 
 # logs
 logstash-formatter==0.5.14

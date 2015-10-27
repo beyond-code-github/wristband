@@ -77,30 +77,24 @@ MONGO_DB_NAME
 App specific environment variables
 
 
-===================================== ===================================== =========================== ==================
-Environment Variable                  Django Setting                        Development Default         Production Default
-===================================== ===================================== =========================== ==================
-STAGES                                STAGES                                qa,staging                  qa,staging
-RELEASES_APP_URI                      RELEASES_APP_URI                      raises error                raises error
-AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldaps://localhost           raises error
-AUTH_LDAP_USER_DN_TEMPLATE            AUTH_LDAP_USER_DN_TEMPLATE            cn={user},dc=example,dc=com raises error
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                        raises error
-DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG
-===================================== ===================================== ============================ ==================
+===================================== ===================================== ====================================== ==================
+Environment Variable                  Django Setting                        Development Default                    Production Default
+===================================== ===================================== ====================================== ==================
+STAGES                                STAGES                                qa,staging                             qa,staging
+RELEASES_APP_URI                      RELEASES_APP_URI                      raises error                           raises error
+AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldaps://localhost                      raises error
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                                   raises error
+AUTH_LDAP_USER_SEARCH_DN              AUTH_LDAP_USER_SEARCH_DN              ou=users,dc=example,dc=com             raises error
+AUTH_LDAP_GROUP_SEARCH_DN             AUTH_LDAP_GROUP_SEARCH_DN             ou=groups,dc=example,dc=com            raises error
+AUTH_LDAP_SUPERUSER_DN                AUTH_LDAP_SUPERUSER_DN                cn=planets,ou=groups,dc=example,dc=com raises error
+DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG                                  raises error
+===================================== ===================================== ====================================== ==================
 
 
-Prepare a config file for the Jenkins provider (currently the only Service Provider that can do deployments). Put a
-file called `providers.yaml` in the `wristband/providers` directory containing information for the Jenkins service in
-the environment you are deploying to (ie. the target environment, not the source environment):
 
-    jenkins:
-      env1:
-        zone1:
-          uri: https://jenkins.env1.zone1/
-          job_name: deploy
-          username: foo
-          password: <jenkins api token>
-
+Prepare a config file for the Docktor provider (currently the only Service Provider that can do deployments). Put a
+file called `providers.yaml` in the `wristband/providers` directory containing information for the Docktor service in
+the environment you are deploying to. A sample file is provided.
 
 To finish preparation, run
 
@@ -109,7 +103,13 @@ To finish preparation, run
 Running
 ^^^^^^^
 
-     $ ./manage.py runserver_plus 0.0.0.0:8000
+The VM contains two mock instances of Docktor, they need to be running.
+
+     $ run_docktor
+
+Then run wristband
+
+     $ run_wristband
 
 
 Authentication
@@ -126,8 +126,9 @@ Session authentication should be used in the browser scenario:
 
 1. POST username and password to /login/
 
+If using the ldap server in the VM the login credentials are: mars/password
+The user mars belongs to the planets group.
 
-If using the ldap server in the VM the login credentials are: Manager/password
-
+LDAPS is exposed to the host machine on port 1636
 
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/

@@ -1,0 +1,11 @@
+# create users
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+# create groups
+dn: ou=groups,dc=example,dc=com
+objectclass: organizationalunit
+objectClass: top
+ou: groups

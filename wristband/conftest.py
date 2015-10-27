@@ -1,5 +1,8 @@
 from mongoengine.django.mongo_auth.models import get_user_document
 import pytest
+from rest_framework.test import APIRequestFactory
+
+from wristband.test_utils.authentication import PatchedAPIClient
 
 
 class DummyApp(object):
@@ -59,3 +62,21 @@ def django_user_model():
     Overrides the default pytest-django fixture
     """
     return get_user_document()
+
+
+@pytest.fixture
+def api_client():
+    """
+    REST framework API client
+
+    This is a patched version using the login function compatible with Mongo
+    """
+    return PatchedAPIClient()
+
+
+@pytest.fixture
+def api_rf():
+    """
+    REST framework request factory
+    """
+    return APIRequestFactory()
