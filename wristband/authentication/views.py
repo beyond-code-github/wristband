@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from rest_framework.authtoken.views import ObtainAuthToken as OriginalObtainAuthToken
 from rest_framework.response import Response
+from django.conf import settings
 
 from wristband.authentication.utils import login
 from wristband.authentication.models import Token
@@ -20,7 +21,8 @@ def login_view(request):
         data = {'session_key': request.session.session_key}
         status = 200
     else:
-        data = {'details': 'Invalid credential details'}
+        data = {'details': 'Invalid credential details. Please ensure you are using your {environment} login.'.format(
+            environment=settings.WRISTBAND_ENV)}
         status = 401  # forbidden
     return JsonResponse(data=data, status=status)
 
@@ -30,7 +32,6 @@ def logout_view(request):
     logout(request)
     data = {'message': 'User logged out'}
     return JsonResponse(data=data)
-
 
 class ObtainAuthToken(OriginalObtainAuthToken):
     def post(self, request):
