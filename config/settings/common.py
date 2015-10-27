@@ -267,8 +267,8 @@ REST_FRAMEWORK = {
 # APP SPECIFIC SETTINGS
 # -----------------------------------------------------------------------------
 
-RELEASES_APP_URI = env('RELEASES_APP_URI')
 STAGES = env('STAGES', default='qa,staging')
 
-
 PROVIDER_CONFIG = env('PROVIDER_CONFIG', default='providers.yaml')
+WEBSTORE_URL = env('WEBSTORE_URL')
+
