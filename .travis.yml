@@ -4,7 +4,7 @@ env:
 python:
 - '2.7'
 env:
-- RELEASES_APP_URI=http://test.com
+- WEBSTORE_URL=http://test.com
 services:
 - mongodb
 before_install:
