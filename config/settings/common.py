@@ -230,6 +230,11 @@ LOGGING = {
             'level': LOG_LEVEL,
             'propagate': True,
         },
+        'django': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': True,
+        },
         'wristband.authentication': {
             'handlers': ['console'],
             'level': LOG_LEVEL,
