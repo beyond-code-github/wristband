@@ -244,6 +244,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': LOG_LEVEL,
             'propagate': True
+        },
+        'wristband.apps.providers': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': True
         }
     }
 }
