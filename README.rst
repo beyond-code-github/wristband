@@ -77,18 +77,20 @@ MONGO_DB_NAME
 App specific environment variables
 
 
-===================================== ===================================== ====================================== ==================
-Environment Variable                  Django Setting                        Development Default                    Production Default
-===================================== ===================================== ====================================== ==================
-STAGES                                STAGES                                qa,staging                             qa,staging
-WEBSTORE_URL                          WEBSTORE_URL                          raises error                           raises error
-AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldaps://localhost                      raises error
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                                   raises error
-AUTH_LDAP_USER_SEARCH_DN              AUTH_LDAP_USER_SEARCH_DN              ou=users,dc=example,dc=com             raises error
-AUTH_LDAP_GROUP_SEARCH_DN             AUTH_LDAP_GROUP_SEARCH_DN             ou=groups,dc=example,dc=com            raises error
-AUTH_LDAP_SUPERUSER_DN                AUTH_LDAP_SUPERUSER_DN                cn=planets,ou=groups,dc=example,dc=com raises error
-DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG                                  raises error
-===================================== ===================================== ====================================== ==================
+===================================== ===================================== ======================================== ==================
+Environment Variable                  Django Setting                        Development Default                      Production Default
+===================================== ===================================== ======================================== ==================
+STAGES                                STAGES                                qa,staging                               qa,staging
+WEBSTORE_URL                          WEBSTORE_URL                          raises error                             raises error
+WRISTBAND_ENV                         WRISTBAND_ENV                         local                                    prod
+KIBANA_URL                            KIBANA_URL                            https://{stage}-{security_zone}.test.com raises error
+AUTH_LDAP_SERVER_URI                  AUTH_LDAP_SERVER_URI                  ldaps://localhost                        raises error
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER AUTH_LDAP_BIND_AS_AUTHENTICATING_USER True                                     raises error
+AUTH_LDAP_USER_SEARCH_DN              AUTH_LDAP_USER_SEARCH_DN              ou=users,dc=example,dc=com               raises error
+AUTH_LDAP_GROUP_SEARCH_DN             AUTH_LDAP_GROUP_SEARCH_DN             ou=groups,dc=example,dc=com              raises error
+AUTH_LDAP_SUPERUSER_DN                AUTH_LDAP_SUPERUSER_DN                cn=planets,ou=groups,dc=example,dc=com   raises error
+DJANGO_LOG_LEVEL                      LOG_LEVEL                             DEBUG                                    raises error
+===================================== ===================================== ======================================== ==================
 
 
 

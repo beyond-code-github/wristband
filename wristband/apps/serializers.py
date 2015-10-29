@@ -5,6 +5,7 @@ class NestedAppSerializer(serializers.Serializer):
     name = serializers.CharField()
     version = serializers.CharField()
     stage = serializers.CharField()
+    log_url = serializers.URLField(allow_null=True)
 
 
 class AppSerializer(serializers.Serializer):
