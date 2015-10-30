@@ -39,7 +39,7 @@ class GenericDocktorDataProvider(JsonDataProvider):
             'version': extract_version_from_slug(data['slug_uri']),
             'state': data['state']
         }
-        if data['state'] == 'healthy':
+        if data['state'] != 'healthy':
             log_url = settings.KIBANA_URL.format(stage=stage, security_zone=security_zone)
         else:
             log_url = None

@@ -5,6 +5,7 @@ python:
 - '2.7'
 env:
 - WEBSTORE_URL=http://test.com
+- KIBANA_URL='https://{stage}-{security_zone}.test.com'
 services:
 - mongodb
 before_install:
