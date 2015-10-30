@@ -38,7 +38,7 @@ KIBANA_URL = 'https://{stage}-{security_zone}.test.com'
             'security_zone': 'bar',
             'version': '1.7.7',
             'state': 'healthy',
-            'log_url': None
+            'log_url': 'https://foo-bar.test.com'
         }
     ),
     (
