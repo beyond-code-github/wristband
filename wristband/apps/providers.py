@@ -5,6 +5,7 @@ from gevent import monkey
 
 monkey.patch_socket()
 from gevent.pool import Pool
+from django.conf import settings
 
 from wristband.common.utils import extract_version_from_slug
 from wristband.providers import providers_config
@@ -31,13 +32,19 @@ class GenericDocktorDataProvider(JsonDataProvider):
     @staticmethod
     def get_app_info(stage, security_zone, env_url):
         data = requests.get(env_url).json()
-        return {
+        app = {
             'name': data['app'],
             'stage': stage,
             'security_zone': security_zone,
             'version': extract_version_from_slug(data['slug_uri']),
             'state': data['state']
         }
+        if data['state'] != 'healthy':
+            log_url = settings.KIBANA_URL.format(stage=stage, security_zone=security_zone)
+        else:
+            log_url = None
+        app['log_url'] = log_url
+        return app
 
 
 class NestedDocktorAppDataProvider(GenericDocktorDataProvider):
@@ -48,7 +55,8 @@ class NestedDocktorAppDataProvider(GenericDocktorDataProvider):
         data = [{'name': app['name'],
                  'version': app['version'],
                  'stage': app['stage'],
-                 'state': app['state']}
+                 'state': app['state'],
+                 'log_url': app['log_url']}
                 for app in self.raw_data]
         return sorted(data, key=lambda x: x['name'])
 
@@ -92,12 +100,14 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                         {
                            "name": "qa",
                            "version": "1.7.7"
-                           "state": "healthy"
+                           "state": "healthy",
+                           "log_url": none
                         },
                         {
                            "name": "staging",
                            "version": "1.7.2"
-                           "state": "unhealthy"
+                           "state": "unhealthy",
+                           "log_url": "https://test.com/#/dashboard/file/deployments.json?microservice=wristband"
                         }
                     ]
             },
@@ -116,6 +126,7 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                     'name': app_stage,
                     'version': app['version'],
                     'state': app['state'],
+                    'log_url': app['log_url']
 
                 })
             else:
@@ -125,7 +136,8 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                     'stages': [{
                         'name': app_stage,
                         'version': app['version'],
-                        'state': app['state']
+                        'state': app['state'],
+                        'log_url': app['log_url']
                     }]
                 }
                 data.append(app_to_be_added)
