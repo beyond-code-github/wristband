@@ -5,6 +5,8 @@
     line="export {{item.variable}}='{{item.value}}'"
     owner=vagrant
   with_items:
+    - {variable: 'AUTH_LDAP_SERVER_URI', value: 'ldaps://localhost'}
+    - {variable: 'DEPLOYED_ENV', value: 'local'}
     - {variable: 'AUTH_LDAP_USER_SEARCH', value: 'uid={user},ou=groups,dc=example,dc=com'}
     - {variable: 'AUTH_LDAP_SERVER_URI', value: 'ldaps://localhost'}
 

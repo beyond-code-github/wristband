@@ -1,5 +1,6 @@
 from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import resolve_url
+from django.conf import settings
 import mock
 from wristband.authentication.views import login_view, logout_view
 
@@ -21,12 +22,11 @@ def test_login_view(mocked_authenticate, mocked_login, client, django_user_model
 @mock.patch('wristband.authentication.views.authenticate')
 def test_login_view_bad_credential(mocked_authenticate, rf):
     mocked_authenticate.return_value = None
-
     url = resolve_url('login')
     request = rf.post(url, {'username': 'test_user', 'password': 'password'})
     response = login_view(request)
     mocked_authenticate.assert_called_with(username='test_user', password='password')
-    assert 'details' in response.content
+    assert 'Please ensure you are using your test login' in response.content
     assert isinstance(response, JsonResponse)
     assert response.status_code == 401
 
