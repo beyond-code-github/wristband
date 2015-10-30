@@ -3,6 +3,7 @@ from functools import partial
 from requests_futures.sessions import FuturesSession
 from requests.packages.urllib3.util import Retry
 from requests.adapters import HTTPAdapter
+from django.conf import settings
 
 from wristband.common.utils import extract_version_from_slug
 from wristband.providers import providers_config
@@ -66,7 +67,8 @@ class GenericDocktorDataProvider(JsonDataProvider):
             'stage': stage,
             'security_zone': zone,
             'version': extract_version_from_slug(data['slug_uri']),
-            'state': data['state']
+            'state': data['state'],
+            'log_url': settings.KIBANA_URL.format(stage=stage, security_zone=zone)
         }
 
 
@@ -78,7 +80,8 @@ class NestedDocktorAppDataProvider(GenericDocktorDataProvider):
         data = [{'name': app['name'],
                  'version': app['version'],
                  'stage': app['stage'],
-                 'state': app['state']}
+                 'state': app['state'],
+                 'log_url': app['log_url']}
                 for app in self.raw_data]
         return sorted(data, key=lambda x: x['name'])
 
@@ -122,12 +125,14 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                         {
                            "name": "qa",
                            "version": "1.7.7"
-                           "state": "healthy"
+                           "state": "healthy",
+                           "log_url": none
                         },
                         {
                            "name": "staging",
                            "version": "1.7.2"
-                           "state": "unhealthy"
+                           "state": "unhealthy",
+                           "log_url": "https://test.com/#/dashboard/file/deployments.json?microservice=wristband"
                         }
                     ]
             },
@@ -146,6 +151,7 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                     'name': app_stage,
                     'version': app['version'],
                     'state': app['state'],
+                    'log_url': app['log_url']
 
                 })
             else:
@@ -155,7 +161,8 @@ class DocktorAppDataProvider(GenericDocktorDataProvider):
                     'stages': [{
                         'name': app_stage,
                         'version': app['version'],
-                        'state': app['state']
+                        'state': app['state'],
+                        'log_url': app['log_url']
                     }]
                 }
                 data.append(app_to_be_added)
