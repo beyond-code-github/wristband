@@ -11,28 +11,26 @@ from wristband.providers.generics import JsonDataProvider
 import logging
 logger = logging.getLogger('wristband.apps.providers')
 
-EXPIRY_JOB_TIME_MINUTES = 10
-CONCURRENT_JOBS_LIMIT = 30
+CONCURRENT_JOBS_LIMIT = 10
+REQUEST_TIMEOUT = 10
+REQUEST_RETRIES = 10
 
 
 class GenericDocktorDataProvider(JsonDataProvider):
+    __requests_http_adapter = HTTPAdapter(
+        Retry(total=REQUEST_RETRIES, status_forcelist=[502], backoff_factor=0.5))
+
     def _get_raw_data(self):
         docktor_config = providers_config.providers['docktor']
         apps = []
-        session = FuturesSession(max_workers=10)
-        session.mount('https://', HTTPAdapter(
-                max_retries=Retry(total=5, status_forcelist=[502])
-            )
-        )
-        session.mount('http://', HTTPAdapter(
-                max_retries=Retry(total=5, status_forcelist=[502])
-            )
-        )
+        session = FuturesSession(max_workers=CONCURRENT_JOBS_LIMIT)
+        session.mount('https://', self.__requests_http_adapter)
+        session.mount('http://', self.__requests_http_adapter)
         for stage in docktor_config:
             for zone in docktor_config[stage]:
                 apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
                 try:
-                    r = session.get(apps_uri, timeout=5).result()
+                    r = session.get(apps_uri, timeout=REQUEST_TIMEOUT).result()
                     r.raise_for_status()
                     apps_list = r.json()
                 except ValueError as e:
@@ -42,7 +40,7 @@ class GenericDocktorDataProvider(JsonDataProvider):
                     logger.error("Exception raised on {}-{} docktor".format(stage, zone))
                     raise e
 
-                future_apps_details = [session.get('{apps_uri}{app}'.format(apps_uri=apps_uri, app=app), timeout=5) for app in apps_list]
+                future_apps_details = [session.get('{apps_uri}{app}'.format(apps_uri=apps_uri, app=app), timeout=REQUEST_TIMEOUT) for app in apps_list]
 
                 try:
                     apps_details = [a.result() for a in future_apps_details]
