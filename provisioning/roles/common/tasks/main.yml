@@ -16,3 +16,4 @@
     - libldap2-dev
     - libsasl2-dev
     - libssl-dev
+    - libffi-dev
