@@ -38,7 +38,7 @@ KIBANA_URL = 'https://{stage}-{security_zone}.test.com'
             'security_zone': 'bar',
             'version': '1.7.7',
             'state': 'healthy',
-            'log_url': None
+            'log_url': 'https://foo-bar.test.com'
         }
     ),
     (
@@ -61,9 +61,9 @@ KIBANA_URL = 'https://{stage}-{security_zone}.test.com'
 ])
 def test_get_app_info(app_data, stage, security_zone,  expected_result, settings):
     settings.KIBANA_URL = KIBANA_URL
-    with mock.patch('wristband.apps.providers.requests') as mocked_requests:
-        mocked_requests.get.return_value.json.return_value = app_data
-        assert NestedDocktorAppDataProvider.get_app_info(stage, security_zone, 'test') == expected_result
+    with mock.patch('wristband.apps.providers.FuturesSession') as mocked_requests:
+        mocked_requests.json.return_value = app_data
+        assert NestedDocktorAppDataProvider.get_app_info(stage, security_zone, mocked_requests) == expected_result
 
 
 @mock.patch.object(NestedDocktorAppDataProvider, '_get_raw_data')

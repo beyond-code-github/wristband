@@ -5,7 +5,7 @@ from wristband.providers.service_providers import DocktorServiceProvider
 PROVIDERS_LOOKUP = {
     'docktor': DocktorServiceProvider
 }
-VERSION_REGEX = r'\d+\.\d+\.\d+'
+VERSION_REGEX = r'.*_(.*)\.tgz'
 
 
 def extract_stage(environment):

@@ -1,50 +1,75 @@
 from functools import partial
 
-import requests
-from gevent import monkey
-
-monkey.patch_socket()
-from gevent.pool import Pool
+from requests_futures.sessions import FuturesSession
+from requests.packages.urllib3.util import Retry
+from requests.adapters import HTTPAdapter
 from django.conf import settings
 
 from wristband.common.utils import extract_version_from_slug
 from wristband.providers import providers_config
 from wristband.providers.generics import JsonDataProvider
 
-EXPIRY_JOB_TIME_MINUTES = 10
-CONCURRENT_JOBS_LIMIT = 30
+import logging
+logger = logging.getLogger('wristband.apps.providers')
+
+CONCURRENT_JOBS_LIMIT = 10
+REQUEST_TIMEOUT = 10
+REQUEST_RETRIES = 10
 
 
 class GenericDocktorDataProvider(JsonDataProvider):
+    __requests_http_adapter = HTTPAdapter(
+        Retry(total=REQUEST_RETRIES, status_forcelist=[502], backoff_factor=0.5))
+
     def _get_raw_data(self):
         docktor_config = providers_config.providers['docktor']
         apps = []
+        session = FuturesSession(max_workers=CONCURRENT_JOBS_LIMIT)
+        session.mount('https://', self.__requests_http_adapter)
+        session.mount('http://', self.__requests_http_adapter)
         for stage in docktor_config:
-            for security_zone in docktor_config[stage]:
-                apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][security_zone]['uri'])
-                apps_list = requests.get(apps_uri).json()
-                apps_urls = ['{apps_uri}{app}'.format(apps_uri=apps_uri, app=app) for app in apps_list]
-                pool = Pool(CONCURRENT_JOBS_LIMIT)
-                partial_get_app_info = partial(self.get_app_info, stage, security_zone)
-                apps += pool.map(partial_get_app_info, apps_urls)
+            for zone in docktor_config[stage]:
+                apps_uri = '{uri}/apps/'.format(uri=docktor_config[stage][zone]['uri'])
+                try:
+                    r = session.get(apps_uri, timeout=REQUEST_TIMEOUT).result()
+                    r.raise_for_status()
+                    apps_list = r.json()
+                except ValueError as e:
+                    logger.error("Non json response {} from {}-{} docktor".format(r.content, stage, zone))
+                    raise e
+                except Exception as e:
+                    logger.error("Exception raised on {}-{} docktor".format(stage, zone))
+                    raise e
+
+                future_apps_details = [session.get('{apps_uri}{app}'.format(apps_uri=apps_uri, app=app), timeout=REQUEST_TIMEOUT) for app in apps_list]
+
+                try:
+                    apps_details = [a.result() for a in future_apps_details]
+                except Exception as e:
+                    logger.error("Exception raised on {}-{} docktor".format(stage, zone))
+                    raise e
+
+                partial_get_app_info = partial(self.get_app_info, stage, zone)
+
+                apps.extend(map(lambda a: partial_get_app_info(a), apps_details))
         return apps
 
     @staticmethod
-    def get_app_info(stage, security_zone, env_url):
-        data = requests.get(env_url).json()
-        app = {
+    def get_app_info(stage, zone, response):
+        try:
+            response.raise_for_status()
+        except ValueError as e:
+            logger.error("Non json response {} from {}-{} docktor".format(response.content, stage, zone))
+            raise e
+        data = response.json()
+        return {
             'name': data['app'],
             'stage': stage,
-            'security_zone': security_zone,
+            'security_zone': zone,
             'version': extract_version_from_slug(data['slug_uri']),
-            'state': data['state']
+            'state': data['state'],
+            'log_url': settings.KIBANA_URL.format(stage=stage, security_zone=zone)
         }
-        if data['state'] != 'healthy':
-            log_url = settings.KIBANA_URL.format(stage=stage, security_zone=security_zone)
-        else:
-            log_url = None
-        app['log_url'] = log_url
-        return app
 
 
 class NestedDocktorAppDataProvider(GenericDocktorDataProvider):

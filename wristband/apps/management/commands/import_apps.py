@@ -7,6 +7,7 @@ class Command(BaseCommand):
     help = 'Maps the apps to the relevant security zones'
 
     def handle(self, *args, **options):
-        for app in NestedDocktorAppDataProvider.to_models():
+        ndadp = NestedDocktorAppDataProvider()
+        for app in ndadp.to_models():
             if not App.objects(name=app['name']).first():
-                App(**app).save()
+                App(**{k: v for k, v in app.items() if k != "stage"}).save()
