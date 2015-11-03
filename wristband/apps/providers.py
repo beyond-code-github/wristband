@@ -62,13 +62,14 @@ class GenericDocktorDataProvider(JsonDataProvider):
             logger.error("Non json response {} from {}-{} docktor".format(response.content, stage, zone))
             raise e
         data = response.json()
+        log_url = settings.KIBANA_URL.format(stage=stage, security_zone=zone) if zone != 'right' else None
         return {
             'name': data['app'],
             'stage': stage,
             'security_zone': zone,
             'version': extract_version_from_slug(data['slug_uri']),
             'state': data['state'],
-            'log_url': settings.KIBANA_URL.format(stage=stage, security_zone=zone)
+            'log_url': log_url
         }
 
 
